@@ -171,7 +171,8 @@ class NafsVpnService : VpnService() {
         }
     }
 
-    private fun parseDnsDomain(dns: ByteArray): String? = try {
+    private fun parseDnsDomain(dns: ByteArray): String? {
+        return try {
         if (dns.size < 13) null
         else {
             val sb = StringBuilder()
@@ -187,7 +188,8 @@ class NafsVpnService : VpnService() {
             }
             sb.toString()
         }
-    } catch (e: Exception) { null }
+        } catch (e: Exception) { null }
+    }
 
     private fun buildNxDomainResponse(query: ByteArray): ByteArray {
         val r = query.copyOf()
