@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private val overlayLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
+        isPinActive = false  // overlay screen থেকে ফিরলে reset
         if (Settings.canDrawOverlays(this@MainActivity)) {
             if (pinManager.isMasterEnabled && !MasterService.isRunning) {
                 checkAndStartGuard()
@@ -84,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (!Settings.canDrawOverlays(this)) {
+            isPinActive = true  // overlay screen এ গেলে isVerified=false হবে না
             overlayLauncher.launch(
                 Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
                     data = Uri.parse("package:$packageName")
