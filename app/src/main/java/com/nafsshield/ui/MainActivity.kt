@@ -26,55 +26,27 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var pinManager: PinManager
+    private var wentToBackground = false
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) startGuard()
     }
-    
+
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
+    ) { }
+
+    private val pinLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // Result is handled, app won't minimize
-        // Admin status will update in onResume of SettingsFragment
-    }
-
-    // Task switcher থেকে ফিরলে PIN চাইবে
-    private var wentToBackground = false
-    private var pinLaunched = false
-
-    override fun onStop() {
-        super.onStop()
-        // Screen rotate হলে background count করবো না
-        if (!isChangingConfigurations) {
-            wentToBackground = true
-            PinActivity.isVerified = false
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (isChangingConfigurations) return
-        if (!::pinManager.isInitialized) return
-        if (!pinManager.isPinSetup) return
-
-        // Task switcher থেকে ফিরলে AND PIN verify হয়নি → PIN চাও
-        if (wentToBackground && !PinActivity.isVerified && !pinLaunched) {
-            pinLaunched = true
-            startActivity(Intent(this, PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            })
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // PIN screen থেকে ফিরে আসলে reset করো
-        if (PinActivity.isVerified) {
+        if (result.resultCode == RESULT_OK || PinActivity.isVerified) {
+            // PIN সফল — app দেখাও
             wentToBackground = false
-            pinLaunched = false
+        } else {
+            // PIN বাতিল বা ভুল — app বন্ধ করো
+            finishAffinity()
         }
     }
 
@@ -93,26 +65,43 @@ class MainActivity : AppCompatActivity() {
 
         // PIN verify হয়নি → verify screen
         if (!PinActivity.isVerified) {
-            startActivity(Intent(this, PinActivity::class.java).apply {
+            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
             })
-            finish()
-            return
         }
 
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
         setupNavigation()
 
-        // Overlay permission check (optional prompt)
         if (!Settings.canDrawOverlays(this)) {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
         }
 
-        // Auto-start guard if was enabled
         if (pinManager.isMasterEnabled && !MasterService.isRunning) {
             checkAndStartGuard()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) {
+            wentToBackground = true
+            PinActivity.isVerified = false
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isChangingConfigurations) return
+        if (!::pinManager.isInitialized) return
+        if (!pinManager.isPinSetup) return
+
+        if (wentToBackground && !PinActivity.isVerified) {
+            wentToBackground = false
+            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
+                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
+            })
         }
     }
 
@@ -127,33 +116,29 @@ class MainActivity : AppCompatActivity() {
 
     fun checkAndStartGuard() {
         val vpnIntent = VpnService.prepare(this)
-        if (vpnIntent != null) {
-            vpnLauncher.launch(vpnIntent)
-        } else {
-            startGuard()
-        }
+        if (vpnIntent != null) vpnLauncher.launch(vpnIntent)
+        else startGuard()
     }
 
     private fun startGuard() {
-        val intent = Intent(this, MasterService::class.java).apply {
-            action = Constants.ACTION_START_MASTER
-        }
-        ContextCompat.startForegroundService(this, intent)
+        ContextCompat.startForegroundService(this,
+            Intent(this, MasterService::class.java).apply {
+                action = Constants.ACTION_START_MASTER
+            })
         pinManager.isMasterEnabled = true
     }
 
     fun activateDeviceAdmin() {
-        val dpm            = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val adminComponent = ComponentName(this, NafsDeviceAdmin::class.java)
-        if (!dpm.isAdminActive(adminComponent)) {
-            val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
-                putExtra(
-                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                    "NafsShield কে Device Admin করলে uninstall কঠিন হয়ে যাবে।"
-                )
-            }
-            deviceAdminLauncher.launch(intent)
+        val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val admin = ComponentName(this, NafsDeviceAdmin::class.java)
+        if (!dpm.isAdminActive(admin)) {
+            deviceAdminLauncher.launch(
+                Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, admin)
+                    putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                        "NafsShield কে Device Admin করলে uninstall কঠিন হয়ে যাবে।")
+                }
+            )
         }
     }
 }
