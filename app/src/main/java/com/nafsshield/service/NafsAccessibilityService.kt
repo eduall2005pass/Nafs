@@ -20,6 +20,9 @@ class NafsAccessibilityService : AccessibilityService() {
     companion object {
         const val TAG = "NafsAccessibility"
         @Volatile var instance: NafsAccessibilityService? = null
+        @Volatile var gracePeriodUntil: Long = 0L
+        fun grantGracePeriod(ms: Long = 15000L) { gracePeriodUntil = System.currentTimeMillis() + ms }
+        fun isInGracePeriod() = System.currentTimeMillis() < gracePeriodUntil
         val isRunning get() = instance != null
         
         // Correct PIN দেওয়ার পর 4 সেকেন্ড monitoring pause
@@ -113,6 +116,7 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
     }
+        if (isInGracePeriod()) return
 
     private fun handleWindowChange(pkg: String, event: AccessibilityEvent) {
         lastPkg = pkg
@@ -224,6 +228,7 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
     }
+        if (isInGracePeriod()) return
     
     private fun checkForNafsShieldInSettings() {
         if (isInGracePeriod()) return
@@ -283,6 +288,7 @@ class NafsAccessibilityService : AccessibilityService() {
         }
     }
     
+        if (isInGracePeriod()) return
     private fun handleDeviceAdminScreen() {
         if (isInGracePeriod()) return
         Log.d(TAG, "🔒 Device Admin screen — launching PIN")
@@ -294,6 +300,7 @@ class NafsAccessibilityService : AccessibilityService() {
                      com.nafsshield.ui.pin.PinActivity.MODE_VERIFY_ADMIN)
         })
     }
+        if (isInGracePeriod()) return
 
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
         if (isInGracePeriod()) return
@@ -327,6 +334,7 @@ class NafsAccessibilityService : AccessibilityService() {
             if (hasWebViewNode(node.getChild(i))) return true
         }
         return false
+        if (isInGracePeriod()) return
     }
 
     private fun handleSettingsScreen(event: AccessibilityEvent) {
@@ -406,6 +414,7 @@ class NafsAccessibilityService : AccessibilityService() {
                      android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(com.nafsshield.ui.pin.PinActivity.MODE,
                      com.nafsshield.ui.pin.PinActivity.MODE_SETTINGS_ACCESS)
+        if (isInGracePeriod()) return
         })
     }
 
@@ -469,6 +478,7 @@ class NafsAccessibilityService : AccessibilityService() {
             if (findAndClickNode(node.getChild(i), keywords)) {
                 return true
             }
+        if (isInGracePeriod()) return
         }
         return false
     }
@@ -492,6 +502,7 @@ class NafsAccessibilityService : AccessibilityService() {
                 checkIfNafsShieldDragging(root)
             }
             root.recycle()
+        if (isInGracePeriod()) return
         } catch (e: Exception) {
             Log.e(TAG, "checkLauncherDrag error: ${e.message}")
         }
@@ -532,6 +543,7 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
         for (i in 0 until node.childCount) {
+        if (isInGracePeriod()) return
             val found = findDraggedItem(node.getChild(i))
             if (found != null) return found
         }
