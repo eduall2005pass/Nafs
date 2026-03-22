@@ -21,6 +21,13 @@ class NafsAccessibilityService : AccessibilityService() {
         const val TAG = "NafsAccessibility"
         @Volatile var instance: NafsAccessibilityService? = null
         val isRunning get() = instance != null
+        
+        // Correct PIN দেওয়ার পর 4 সেকেন্ড monitoring pause
+        @Volatile var gracePeriodUntil: Long = 0L
+        fun grantGracePeriod(ms: Long = 4000L) {
+            gracePeriodUntil = System.currentTimeMillis() + ms
+        }
+        fun isInGracePeriod() = System.currentTimeMillis() < gracePeriodUntil
 
         // Samsung/Android system UI packages যেখানে "Stop" button আসে
         val SYSTEM_UI_PACKAGES = setOf(
@@ -109,6 +116,9 @@ class NafsAccessibilityService : AccessibilityService() {
 
     private fun handleWindowChange(pkg: String, event: AccessibilityEvent) {
         lastPkg = pkg
+
+        // Grace period এ আছি — কিছু block করবো না
+        if (isInGracePeriod()) return
 
         // Stop settings monitoring if we left settings
         if (isInSettings && !Constants.SETTINGS_PACKAGES.contains(pkg)) {

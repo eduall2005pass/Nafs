@@ -172,7 +172,8 @@ class PinActivity : AppCompatActivity() {
     private fun handleVerifyAdmin(pin: String) {
         when (val r = pinManager.verifyPin(pin)) {
             is PinResult.Correct -> {
-                // 4 সেকেন্ড countdown দেখাও
+                // 4 সেকেন্ড grace period দাও
+                com.nafsshield.service.NafsAccessibilityService.grantGracePeriod(4000L)
                 startAdminRemoveCountdown()
             }
             is PinResult.Wrong -> {
@@ -214,6 +215,8 @@ class PinActivity : AppCompatActivity() {
     private fun handleVerifySettings(pin: String) {
         when (val r = pinManager.verifyPin(pin)) {
             is PinResult.Correct -> {
+                // 4 সেকেন্ড grace period দাও
+                com.nafsshield.service.NafsAccessibilityService.grantGracePeriod(4000L)
                 showSuccess("✅ PIN সঠিক")
                 window.decorView.postDelayed({ finish() }, 500)
             }
