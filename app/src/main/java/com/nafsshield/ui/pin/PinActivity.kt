@@ -1,5 +1,7 @@
 package com.nafsshield.ui.pin
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -14,9 +16,6 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.nafsshield.R
-import com.nafsshield.ui.MainActivity
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import com.nafsshield.admin.NafsDeviceAdmin
 import com.nafsshield.util.PinManager
 import com.nafsshield.util.PinResult
@@ -24,26 +23,26 @@ import com.nafsshield.util.PinResult
 class PinActivity : AppCompatActivity() {
 
     companion object {
-        const val MODE        = "mode"
-        const val MODE_SETUP  = "setup"
-        const val MODE_VERIFY = "verify"
-        const val MODE_CHANGE = "change"
-        const val MODE_VERIFY_ADMIN = "verify_admin"
+        const val MODE                = "mode"
+        const val MODE_SETUP          = "setup"
+        const val MODE_VERIFY         = "verify"
+        const val MODE_CHANGE         = "change"
+        const val MODE_VERIFY_ADMIN   = "verify_admin"
         const val MODE_SETTINGS_ACCESS = "settings_access"
 
         @Volatile var isVerified = false
     }
 
     private lateinit var pinManager: PinManager
-    private lateinit var tvTitle: TextView
+    private lateinit var tvTitle:    TextView
     private lateinit var tvSubtitle: TextView
-    private lateinit var tvMessage: TextView
-    private lateinit var dots: List<ImageView>
+    private lateinit var tvMessage:  TextView
+    private lateinit var dots:       List<ImageView>
 
-    private val currentPin   = StringBuilder()
-    private var firstPin     = ""
-    private var mode         = MODE_VERIFY
-    private var setupStep    = 1
+    private val currentPin = StringBuilder()
+    private var firstPin   = ""
+    private var mode       = MODE_VERIFY
+    private var setupStep  = 1
     private var lockoutTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +56,8 @@ class PinActivity : AppCompatActivity() {
         tvSubtitle = findViewById(R.id.tvSubtitle)
         tvMessage  = findViewById(R.id.tvMessage)
         dots       = listOf(
-            findViewById(R.id.dot1),
-            findViewById(R.id.dot2),
-            findViewById(R.id.dot3),
-            findViewById(R.id.dot4)
+            findViewById(R.id.dot1), findViewById(R.id.dot2),
+            findViewById(R.id.dot3), findViewById(R.id.dot4)
         )
 
         setupKeypad()
@@ -106,44 +103,18 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleVerifyAdmin(pin: String) {
-        when (val r = pinManager.verifyPin(pin)) {
-            is PinResult.Correct -> {
-                showSuccess("✅ PIN সঠিক — সরানো হচ্ছে…")
-                window.decorView.postDelayed({
-                    val dpm = getSystemService(DEVICE_POLICY_SERVICE)
-                            as android.app.admin.DevicePolicyManager
-                    dpm.removeActiveAdmin(android.content.ComponentName(this, NafsDeviceAdmin::class.java))
-                    finish()
-                }, 800)
-            }
-            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
-            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
-            else -> {}
-        }
-    }
-
-    private fun handleVerifySettings(pin: String) {
-        when (val r = pinManager.verifyPin(pin)) {
-            is PinResult.Correct -> { showSuccess("✅ PIN সঠিক"); window.decorView.postDelayed({ finish() }, 500) }
-            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
-            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
-            else -> {}
-        }
-    }
-
+    // ── Setup ─────────────────────────────────────────────────────────
     private fun handleSetup(pin: String) {
         if (setupStep == 1) {
-            firstPin  = pin; setupStep = 2; resetInput()
-            tvTitle.text = "PIN নিশ্চিত করুন"
+            firstPin = pin; setupStep = 2; resetInput()
+            tvTitle.text    = "PIN নিশ্চিত করুন"
             tvSubtitle.text = "আবার একই PIN দিন"
         } else {
             if (pin == firstPin) {
                 pinManager.setPin(pin)
-                // Setup এর পর isVerified = true করো
-                isVerified = true
+                isVerified = true   // setup এর পর verified
                 showSuccess("PIN সেট হয়েছে ✅")
-                goToMain()
+                window.decorView.postDelayed({ goToMain() }, 600)
             } else {
                 showError(getString(R.string.pin_mismatch))
                 setupStep = 1; firstPin = ""; updateHeader()
@@ -151,9 +122,14 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
+    // ── Verify ────────────────────────────────────────────────────────
     private fun handleVerify(pin: String) {
         when (val result = pinManager.verifyPin(pin)) {
-            is PinResult.Correct   -> { isVerified = true; showSuccess("✅ সঠিক!"); goToMain() }
+            is PinResult.Correct -> {
+                isVerified = true
+                showSuccess("✅ সঠিক!")
+                window.decorView.postDelayed({ goToMain() }, 400)
+            }
             is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, result.attemptsLeft))
             is PinResult.LockedOut -> startLockoutTimer(result.secondsRemaining)
             is PinResult.NoPinSet  -> {
@@ -165,20 +141,14 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
+    // ── Change PIN ────────────────────────────────────────────────────
     private fun handleChange(pin: String) {
         when (setupStep) {
             1 -> when (pinManager.verifyPin(pin)) {
                 is PinResult.Correct -> {
-                    when (intent.getStringExtra(MODE)) {
-                        MODE_VERIFY_ADMIN -> {
-                            val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-                            dpm.removeActiveAdmin(ComponentName(this, NafsDeviceAdmin::class.java))
-                            finish(); return
-                        }
-                        MODE_SETTINGS_ACCESS -> { finish(); return }
-                    }
                     setupStep = 2; resetInput()
-                    tvTitle.text = "নতুন PIN দিন"; tvSubtitle.text = ""
+                    tvTitle.text    = "নতুন PIN দিন"
+                    tvSubtitle.text = ""
                 }
                 is PinResult.Wrong     -> showError("পুরনো PIN ভুল")
                 is PinResult.LockedOut -> showError("অ্যাকাউন্ট লক")
@@ -186,13 +156,46 @@ class PinActivity : AppCompatActivity() {
             }
             2 -> { firstPin = pin; setupStep = 3; resetInput(); tvTitle.text = "নতুন PIN নিশ্চিত করুন" }
             3 -> if (pin == firstPin) {
-                pinManager.setPin(pin); showSuccess("PIN পরিবর্তন হয়েছে ✅"); finish()
+                pinManager.setPin(pin)
+                showSuccess("PIN পরিবর্তন হয়েছে ✅")
+                window.decorView.postDelayed({ finish() }, 600)
             } else {
                 showError(getString(R.string.pin_mismatch)); setupStep = 2
             }
         }
     }
 
+    // ── Device Admin remove ───────────────────────────────────────────
+    private fun handleVerifyAdmin(pin: String) {
+        when (val r = pinManager.verifyPin(pin)) {
+            is PinResult.Correct -> {
+                showSuccess("✅ PIN সঠিক — সরানো হচ্ছে…")
+                window.decorView.postDelayed({
+                    val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                    dpm.removeActiveAdmin(ComponentName(this, NafsDeviceAdmin::class.java))
+                    finish()
+                }, 800)
+            }
+            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
+            else -> {}
+        }
+    }
+
+    // ── Settings access ───────────────────────────────────────────────
+    private fun handleVerifySettings(pin: String) {
+        when (val r = pinManager.verifyPin(pin)) {
+            is PinResult.Correct -> {
+                showSuccess("✅ PIN সঠিক")
+                window.decorView.postDelayed({ finish() }, 500)
+            }
+            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
+            else -> {}
+        }
+    }
+
+    // ── Biometric ─────────────────────────────────────────────────────
     private fun setupBiometric() {
         val btn = findViewById<View>(R.id.btnBiometric)
         val bm  = BiometricManager.from(this)
@@ -223,6 +226,7 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
+    // ── Lockout timer ─────────────────────────────────────────────────
     private fun startLockoutTimer(seconds: Long) {
         lockoutTimer?.cancel()
         setKeypadEnabled(false)
@@ -238,10 +242,12 @@ class PinActivity : AppCompatActivity() {
             .forEach { id -> findViewById<View>(id).isEnabled = enabled }
     }
 
+    // ── UI helpers ────────────────────────────────────────────────────
     private fun updateDots() {
         dots.forEachIndexed { i, dot ->
             dot.setImageResource(
-                if (i < currentPin.length) R.drawable.pin_dot_filled else R.drawable.pin_dot_empty
+                if (i < currentPin.length) R.drawable.pin_dot_filled
+                else R.drawable.pin_dot_empty
             )
         }
     }
@@ -253,7 +259,7 @@ class PinActivity : AppCompatActivity() {
         tvMessage.setTextColor(ContextCompat.getColor(this, R.color.accent_red))
         tvMessage.visibility = View.VISIBLE
 
-        // Shake animation
+        // Shake
         tvMessage.animate().translationX(-12f).setDuration(40)
             .withEndAction {
                 tvMessage.animate().translationX(12f).setDuration(40)
@@ -298,22 +304,28 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
+    // ── Navigation ────────────────────────────────────────────────────
     private fun goToMain() {
         // নতুন MainActivity launch করবো না — RESULT_OK দিয়ে ফিরে যাবো
         setResult(RESULT_OK)
         finish()
     }
 
+    // ── Back press ────────────────────────────────────────────────────
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (mode == MODE_VERIFY_ADMIN || mode == MODE_SETTINGS_ACCESS) {
-            startActivity(android.content.Intent(android.content.Intent.ACTION_MAIN).apply {
-                addCategory(android.content.Intent.CATEGORY_HOME)
-                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
-            finish()
+        when (mode) {
+            MODE_VERIFY_ADMIN, MODE_SETTINGS_ACCESS -> {
+                // Settings bypass রোধ — Home এ যাও
+                startActivity(Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+                finish()
+            }
+            MODE_VERIFY, MODE_SETUP -> { /* blocked */ }
+            else -> super.onBackPressed()
         }
-        // MODE_VERIFY তে back blocked
     }
 
     override fun onDestroy() {
