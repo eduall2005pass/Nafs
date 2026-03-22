@@ -40,27 +40,41 @@ class MainActivity : AppCompatActivity() {
         // Admin status will update in onResume of SettingsFragment
     }
 
-    private var lastPausedTime = 0L
-    private val LOCK_TIMEOUT_MS = 30_000L  // 30 সেকেন্ড background এ থাকলে PIN চাইবে
+    // Task switcher থেকে ফিরলে PIN চাইবে
+    private var wentToBackground = false
+    private var pinLaunched = false
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
+        // Screen rotate হলে background count করবো না
         if (!isChangingConfigurations) {
-            lastPausedTime = System.currentTimeMillis()
+            wentToBackground = true
+            PinActivity.isVerified = false
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isChangingConfigurations) return
+        if (!::pinManager.isInitialized) return
+        if (!pinManager.isPinSetup) return
+
+        // Task switcher থেকে ফিরলে AND PIN verify হয়নি → PIN চাও
+        if (wentToBackground && !PinActivity.isVerified && !pinLaunched) {
+            pinLaunched = true
+            startActivity(Intent(this, PinActivity::class.java).apply {
+                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
+                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (!isChangingConfigurations && pinManager.isPinSetup && !PinActivity.isVerified) {
-            val elapsed = System.currentTimeMillis() - lastPausedTime
-            // শুধু 30 সেকেন্ডের বেশি background এ থাকলে PIN চাইবে
-            if (elapsed > LOCK_TIMEOUT_MS || lastPausedTime == 0L) {
-                startActivity(Intent(this, PinActivity::class.java).apply {
-                    putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
-                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                })
-            }
+        // PIN screen থেকে ফিরে আসলে reset করো
+        if (PinActivity.isVerified) {
+            wentToBackground = false
+            pinLaunched = false
         }
     }
 
