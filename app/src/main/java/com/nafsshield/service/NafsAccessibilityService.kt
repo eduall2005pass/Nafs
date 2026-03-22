@@ -463,9 +463,7 @@ class NafsAccessibilityService : AccessibilityService() {
                     performGlobalAction(GLOBAL_ACTION_HOME)
                     mainHandler.postDelayed({
                         overlayManager.showPersistentBlockOverlay(
-                            "⛔ NafsShield আনইনস্টল করা যাবে না!
-
-Device Admin সক্রিয় আছে।",
+                "⛔ NafsShield আনইনস্টল করা যাবে না!\n\nDevice Admin সক্রিয় আছে।",
                             3000
                         )
                     }, 200)
@@ -525,9 +523,7 @@ Device Admin সক্রিয় আছে।",
             performGlobalAction(GLOBAL_ACTION_HOME)
             mainHandler.postDelayed({
                 overlayManager.showPersistentBlockOverlay(
-                    "⛔ NafsShield বন্ধ করা যাবে না!
-
-App সুরক্ষিত আছে।",
+                    "⛔ NafsShield বন্ধ করা যাবে না!\n\nApp সুরক্ষিত আছে।",
                     4000
                 )
             }, 100)
