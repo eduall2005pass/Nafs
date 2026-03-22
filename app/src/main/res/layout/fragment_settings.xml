@@ -328,5 +328,43 @@
                 android:layout_marginTop="12dp" />
         </LinearLayout>
 
+    
+        <!-- Uninstall Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ DANGER ZONE"
+            android:textSize="11sp"
+            android:textColor="#FF4444"
+            android:textAllCaps="true"
+            android:letterSpacing="0.08"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:id="@+id/rowUninstall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🗑️ PIN দিয়ে Uninstall করুন"
+                android:textSize="14sp"
+                android:textColor="#FF4444" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="›"
+                android:textSize="20sp"
+                android:textColor="#FF4444" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

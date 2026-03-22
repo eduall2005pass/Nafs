@@ -55,6 +55,7 @@ class SettingsFragment : Fragment() {
         setupDns(view)
         setupBrowsers(view)
         setupSecurity(view)
+        setupUninstall(view)
     }
 
     private fun setupDns(view: View) {
@@ -207,6 +208,37 @@ class SettingsFragment : Fragment() {
     }
     
     private var currentBrowserDialog: AlertDialog? = null
+
+    private fun setupUninstall(view: View) {
+        view.findViewById<View>(R.id.rowUninstall).setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
+            val etPin = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPinVerify)
+
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("🔓 Uninstall করবেন?")
+                .setMessage("NafsShield uninstall করতে PIN দিন")
+                .setView(dialogView)
+                .setPositiveButton("Uninstall") { _, _ ->
+                    val pin = etPin.text?.toString() ?: ""
+                    if (pinManager.verifyPin(pin) == com.nafsshield.util.PinResult.Correct) {
+                        // Device Admin deactivate করো তারপর uninstall
+                        val dpm = requireContext().getSystemService(android.content.Context.DEVICE_POLICY_SERVICE)
+                                as android.app.admin.DevicePolicyManager
+                        val admin = android.content.ComponentName(requireContext(), com.nafsshield.admin.NafsDeviceAdmin::class.java)
+                        if (dpm.isAdminActive(admin)) dpm.removeActiveAdmin(admin)
+
+                        // Uninstall intent
+                        val uri = android.net.Uri.parse("package:${requireContext().packageName}")
+                        startActivity(android.content.Intent(android.content.Intent.ACTION_UNINSTALL_PACKAGE, uri))
+                    } else {
+                        com.google.android.material.snackbar.Snackbar.make(requireView(), "❌ ভুল PIN!", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show()
+                    }
+                }
+                .setNegativeButton("বাতিল", null)
+                .show()
+            etPin.requestFocus()
+        }
+    }
 
     private fun setupSecurity(view: View) {
         view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
