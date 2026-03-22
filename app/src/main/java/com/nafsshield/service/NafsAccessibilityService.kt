@@ -462,10 +462,7 @@ class NafsAccessibilityService : AccessibilityService() {
                     // সাথে সাথে home এ ফিরে যাও
                     performGlobalAction(GLOBAL_ACTION_HOME)
                     mainHandler.postDelayed({
-                        overlayManager.showPersistentBlockOverlay(
-                "⛔ NafsShield আনইনস্টল করা যাবে না!\n\nDevice Admin সক্রিয় আছে।",
-                            3000
-                        )
+                        overlayManager.showPersistentBlockOverlay("⛔ NafsShield আনইনস্টল করা যাবে না!\n\nDevice Admin সক্রিয় আছে।", 3000)
                     }, 200)
                 }
             }
@@ -522,10 +519,7 @@ class NafsAccessibilityService : AccessibilityService() {
             Log.d(TAG, "🔒 Intercepting Stop button")
             performGlobalAction(GLOBAL_ACTION_HOME)
             mainHandler.postDelayed({
-                overlayManager.showPersistentBlockOverlay(
-                    "⛔ NafsShield বন্ধ করা যাবে না!\n\nApp সুরক্ষিত আছে।",
-                    4000
-                )
+                overlayManager.showPersistentBlockOverlay("⛔ NafsShield বন্ধ করা যাবে না!\n\nApp সুরক্ষিত আছে।", 4000)
             }, 100)
         }
     }
