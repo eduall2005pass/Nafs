@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:minHeight="400dp">
+
+    <!-- Search Bar -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchApps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/card_background"
+        app:iconifiedByDefault="false"
+        app:queryHint="🔍 অ্যাপ খুঁজুন..."
+        app:queryBackground="@android:color/transparent" />
+
+    <!-- App List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAppPicker"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="300dp"
+        android:maxHeight="400dp"
+        android:scrollbars="vertical" />
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/tvEmptyApps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="কোনো অ্যাপ পাওয়া যায়নি"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone" />
+
+</LinearLayout>

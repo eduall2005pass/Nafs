@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/card_background">
+
+    <ImageView
+        android:id="@+id/ivBrowserIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="12dp"
+        android:src="@android:drawable/sym_def_app_icon"
+        android:contentDescription="Browser Icon" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvBrowserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:text="Firefox" />
+
+        <TextView
+            android:id="@+id/tvBrowserPkg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="monospace"
+            android:text="org.mozilla.firefox" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnRemoveBrowser"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_delete"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:tint="@color/accent_red"
+        android:contentDescription="Remove"
+        android:layout_marginStart="8dp" />
+</LinearLayout>

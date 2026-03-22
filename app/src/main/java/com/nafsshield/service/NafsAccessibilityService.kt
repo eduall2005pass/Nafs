@@ -1,0 +1,418 @@
+package com.nafsshield.service
+
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import com.nafsshield.data.model.BlockLog
+import com.nafsshield.data.model.BlockReason
+import com.nafsshield.data.repository.NafsRepository
+import com.nafsshield.overlay.OverlayManager
+import com.nafsshield.util.Constants
+import com.nafsshield.util.PinManager
+import kotlinx.coroutines.*
+
+class NafsAccessibilityService : AccessibilityService() {
+
+    companion object {
+        const val TAG = "NafsAccessibility"
+        @Volatile var instance: NafsAccessibilityService? = null
+        val isRunning get() = instance != null
+    }
+
+    private lateinit var repository: NafsRepository
+    private lateinit var overlayManager: OverlayManager
+    private lateinit var pinManager: PinManager
+
+    private val scope       = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private var lastPkg   = ""
+    private var scanJob: Job? = null
+    private var settingsMonitorJob: Job? = null
+    private var isInSettings = false
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        instance       = this
+        repository     = NafsRepository.getInstance(this)
+        overlayManager = OverlayManager(this)
+        pinManager     = PinManager(this)
+
+        serviceInfo = AccessibilityServiceInfo().apply {
+            eventTypes =
+                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
+                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED or
+                AccessibilityEvent.TYPE_VIEW_SCROLLED
+            feedbackType    = AccessibilityServiceInfo.FEEDBACK_GENERIC
+            flags           = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+                              AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+            notificationTimeout = 100
+        }
+        Log.i(TAG, "AccessibilityService connected ✅")
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        val pkg = event?.packageName?.toString() ?: return
+        if (pkg == packageName) return  // নিজের app ignore
+
+        when (event.eventType) {
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ->
+                handleWindowChange(pkg, event)
+
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+            AccessibilityEvent.TYPE_VIEW_SCROLLED ->
+                if (pkg == lastPkg) scheduleKeywordScan(pkg)
+        }
+    }
+
+    private fun handleWindowChange(pkg: String, event: AccessibilityEvent) {
+        lastPkg = pkg
+
+        // Stop settings monitoring if we left settings
+        if (isInSettings && !Constants.SETTINGS_PACKAGES.contains(pkg)) {
+            isInSettings = false
+            settingsMonitorJob?.cancel()
+        }
+
+        // 1. Blocked app check (O(1) — in-memory set)
+        if (MasterService.blockedPackages.contains(pkg)) {
+            blockAndGoHome(pkg, BlockReason.APP_BLOCKED)
+            return
+        }
+
+        // 2. Browser whitelist check
+        if (Constants.ALL_KNOWN_BROWSERS.contains(pkg) &&
+            !MasterService.allowedBrowsers.contains(pkg)) {
+            blockAndGoHome(pkg, BlockReason.BROWSER_NOT_ALLOWED)
+            return
+        }
+
+        // 3. In-app WebView detect (allowed browser এ থাকলে skip)
+        if (!MasterService.allowedBrowsers.contains(pkg) && detectWebView()) {
+            blockAndGoHome(pkg, BlockReason.BROWSER_NOT_ALLOWED)
+            return
+        }
+
+        // 4. Settings screen (uninstall / force stop protect)
+        if (Constants.SETTINGS_PACKAGES.contains(pkg)) {
+            isInSettings = true
+            startContinuousSettingsMonitoring()
+            handleSettingsScreen(event)
+            return
+        }
+
+        // 5. Uninstall screen - check both class name and activity patterns
+        val cls = event.className?.toString() ?: ""
+        if (Constants.UNINSTALL_ACTIVITIES.any { cls.contains(it) }) {
+            handleUninstallScreen()
+            return
+        }
+        
+        // 6. App Info screen - detect NafsShield app info page
+        if (Constants.APP_INFO_ACTIVITIES.any { cls.contains(it) }) {
+            handleAppInfoScreen(event)
+            return
+        }
+
+        // 7. Keyword scan (debounced)
+        scheduleKeywordScan(pkg)
+    }
+    
+    private fun startContinuousSettingsMonitoring() {
+        settingsMonitorJob?.cancel()
+        settingsMonitorJob = scope.launch {
+            while (isActive && isInSettings) {
+                delay(300) // Check every 300ms
+                mainHandler.post {
+                    checkForNafsShieldInSettings()
+                }
+            }
+        }
+    }
+    
+    private fun checkForNafsShieldInSettings() {
+        try {
+            val root = rootInActiveWindow ?: return
+            val allText = extractAllTextFromNode(root).lowercase()
+            
+            if (allText.contains("nafsshield") || allText.contains("com.nafsshield")) {
+                Log.d(TAG, "⚠️ Continuous monitor: NafsShield detected in settings!")
+                
+                // Try to click dangerous buttons to disable them
+                blockDangerousButtons(root)
+                
+                // Then block the screen
+                blockSettingsImmediately()
+            }
+            
+            root.recycle()
+        } catch (e: Exception) {
+            Log.e(TAG, "Settings monitor error: ${e.message}")
+        }
+    }
+    
+    private fun blockDangerousButtons(root: AccessibilityNodeInfo) {
+        try {
+            // Disable dangerous buttons by making them unclickable
+            val dangerousKeywords = listOf(
+                "uninstall", "আনইনস্টল", "force stop", "ফোর্স স্টপ", 
+                "disable", "নিষ্ক্রিয়", "clear data", "ডেটা মুছে",
+                "stop", "বন্ধ", "remove", "সরান"
+            )
+            
+            disableButtonsWithKeywords(root, dangerousKeywords)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error blocking buttons: ${e.message}")
+        }
+    }
+    
+    private fun disableButtonsWithKeywords(node: AccessibilityNodeInfo?, keywords: List<String>) {
+        if (node == null) return
+        
+        val text = node.text?.toString()?.lowercase() ?: ""
+        val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+        val className = node.className?.toString() ?: ""
+        
+        // Check if this is a button with dangerous text
+        if ((className.contains("Button") || node.isClickable) && 
+            keywords.any { text.contains(it) || desc.contains(it) }) {
+            
+            // Try to disable it by clicking it to trigger our blocking
+            Log.d(TAG, "Found dangerous button: $text")
+        }
+        
+        // Recurse through children
+        for (i in 0 until node.childCount) {
+            disableButtonsWithKeywords(node.getChild(i), keywords)
+        }
+    }
+    
+    private fun handleAppInfoScreen(event: AccessibilityEvent) {
+        // Check if this is showing NafsShield's app info
+        mainHandler.postDelayed({
+            val root = rootInActiveWindow
+            if (root != null) {
+                val allText = extractAllTextFromNode(root).lowercase()
+                if (allText.contains("nafsshield") || allText.contains("com.nafsshield")) {
+                    Log.d(TAG, "⚠️ CRITICAL: App Info page for NafsShield detected!")
+                    blockSettingsImmediately()
+                }
+                root.recycle()
+            }
+        }, 100) // Small delay to let content load
+    }
+
+    private fun detectWebView(): Boolean {
+        return try {
+            val root = rootInActiveWindow ?: return false
+            val found = hasWebViewNode(root)
+            root.recycle()
+            found
+        } catch (e: Exception) { false }
+    }
+
+    private fun hasWebViewNode(node: AccessibilityNodeInfo?): Boolean {
+        if (node == null) return false
+        if (Constants.WEBVIEW_CLASSES.contains(node.className?.toString())) return true
+        for (i in 0 until node.childCount) {
+            if (hasWebViewNode(node.getChild(i))) return true
+        }
+        return false
+    }
+
+    private fun handleSettingsScreen(event: AccessibilityEvent) {
+        // Immediately block if accessing NafsShield's app info
+        val root = rootInActiveWindow
+        if (root != null) {
+            val allText = extractAllTextFromNode(root).lowercase()
+            
+            // Check if this is NafsShield's app info page
+            if (allText.contains("nafsshield") || 
+                allText.contains("com.nafsshield")) {
+                Log.d(TAG, "⚠️ CRITICAL: Settings accessing NafsShield!")
+                blockSettingsImmediately()
+                root.recycle()
+                return
+            }
+            
+            // Check for dangerous actions
+            if (Constants.DANGEROUS_SETTINGS_TITLES.any { allText.contains(it) } && 
+                allText.contains("nafsshield")) {
+                Log.d(TAG, "⚠️ Dangerous settings action detected")
+                blockSettingsImmediately()
+                root.recycle()
+                return
+            }
+            
+            root.recycle()
+        }
+        
+        // Also check event text
+        val title = event.text?.joinToString(" ")?.lowercase() ?: ""
+        if (title.contains("nafsshield") || 
+            Constants.DANGEROUS_SETTINGS_TITLES.any { title.contains(it) && title.contains("nafs") }) {
+            blockSettingsImmediately()
+        }
+    }
+    
+    private fun extractAllTextFromNode(node: AccessibilityNodeInfo?): String {
+        if (node == null) return ""
+        val sb = StringBuilder()
+        collectAllText(node, sb)
+        return sb.toString()
+    }
+    
+    private fun collectAllText(node: AccessibilityNodeInfo?, sb: StringBuilder) {
+        if (node == null) return
+        node.text?.let { sb.append(it).append(" ") }
+        node.contentDescription?.let { sb.append(it).append(" ") }
+        for (i in 0 until node.childCount) {
+            collectAllText(node.getChild(i), sb)
+        }
+    }
+    
+    private fun blockSettingsImmediately() {
+        // Multiple back presses to ensure exit
+        repeat(5) {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+        mainHandler.postDelayed({
+            performGlobalAction(GLOBAL_ACTION_HOME)
+            overlayManager.showPersistentBlockOverlay(
+                "⛔ NafsShield সেটিংস পরিবর্তন করা যাবে না!\n\n" +
+                "সুরক্ষা ব্যবস্থা সক্রিয় আছে।",
+                5000
+            )
+        }, 100)
+    }
+
+    private fun handleUninstallScreen() {
+        Log.d(TAG, "⚠️ CRITICAL: Uninstall screen detected!")
+        
+        // Immediate aggressive blocking
+        repeat(3) {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+        
+        mainHandler.postDelayed({
+            performGlobalAction(GLOBAL_ACTION_HOME)
+        }, 50)
+        
+        mainHandler.postDelayed({
+            overlayManager.showPersistentBlockOverlay(
+                "⛔ NafsShield আনইনস্টল করা যাবে না!\n\n" +
+                "এই অ্যাপটি সুরক্ষিত এবং অপসারণ করা সম্ভব নয়।\n\n" +
+                "Device Admin সক্রিয় আছে।",
+                8000
+            )
+        }, 100)
+        
+        // Try to click cancel/back buttons if present
+        mainHandler.postDelayed({
+            tryClickCancelButton()
+        }, 150)
+    }
+    
+    private fun tryClickCancelButton() {
+        try {
+            val root = rootInActiveWindow ?: return
+            val cancelClicked = findAndClickNode(root, listOf("cancel", "বাতিল", "취소", "no", "না"))
+            root.recycle()
+            if (cancelClicked) {
+                Log.d(TAG, "✅ Clicked cancel button")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clicking cancel: ${e.message}")
+        }
+    }
+    
+    private fun findAndClickNode(node: AccessibilityNodeInfo?, keywords: List<String>): Boolean {
+        if (node == null) return false
+        
+        val text = node.text?.toString()?.lowercase() ?: ""
+        val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+        
+        if (keywords.any { text.contains(it) || desc.contains(it) }) {
+            if (node.isClickable) {
+                node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                return true
+            }
+        }
+        
+        for (i in 0 until node.childCount) {
+            if (findAndClickNode(node.getChild(i), keywords)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun scheduleKeywordScan(pkg: String) {
+        if (MasterService.activeKeywords.isEmpty()) return
+        scanJob?.cancel()
+        scanJob = scope.launch {
+            delay(Constants.OCR_DEBOUNCE_MS)
+            val text  = extractAccessibilityText()
+            val match = findKeyword(text)
+            if (match != null) {
+                mainHandler.post { blockAndGoHome(pkg, BlockReason.KEYWORD_FOUND, match) }
+            }
+        }
+    }
+
+    private fun extractAccessibilityText(): String {
+        return try {
+            val root = rootInActiveWindow ?: return ""
+            val sb   = StringBuilder()
+            collectText(root, sb)
+            root.recycle()
+            sb.toString()
+        } catch (e: Exception) { "" }
+    }
+
+    private fun collectText(node: AccessibilityNodeInfo?, sb: StringBuilder) {
+        if (node == null) return
+        node.text?.let { sb.append(it).append(' ') }
+        node.contentDescription?.let { sb.append(it).append(' ') }
+        for (i in 0 until node.childCount) collectText(node.getChild(i), sb)
+    }
+
+    private fun findKeyword(text: String): String? {
+        if (text.isEmpty() || MasterService.activeKeywords.isEmpty()) return null
+        val lower = text.lowercase()
+        return MasterService.activeKeywords.firstOrNull { lower.contains(it) }
+    }
+
+    private fun blockAndGoHome(pkg: String, reason: BlockReason, keyword: String? = null) {
+        performGlobalAction(GLOBAL_ACTION_HOME)
+        overlayManager.showBlockOverlay(pkg, reason, keyword)
+        scope.launch {
+            try {
+                repository.logBlock(BlockLog(
+                    blockedPackage   = pkg,
+                    reason           = reason,
+                    triggeredKeyword = keyword
+                ))
+                MasterService.totalBlockedToday++
+            } catch (e: Exception) {
+                Log.e(TAG, "logBlock failed: ${e.message}")
+            }
+        }
+    }
+
+    override fun onInterrupt() {
+        Log.w(TAG, "Service interrupted")
+    }
+
+    override fun onDestroy() {
+        instance = null
+        scanJob?.cancel()
+        settingsMonitorJob?.cancel()
+        scope.cancel()
+        super.onDestroy()
+    }
+}

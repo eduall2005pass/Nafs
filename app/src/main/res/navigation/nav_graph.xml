@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.nafsshield.ui.dashboard.DashboardFragment"
+        android:label="Dashboard" />
+    <fragment
+        android:id="@+id/appsFragment"
+        android:name="com.nafsshield.ui.apps.AppsFragment"
+        android:label="Apps" />
+    <fragment
+        android:id="@+id/keywordsFragment"
+        android:name="com.nafsshield.ui.keywords.KeywordsFragment"
+        android:label="Keywords" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.nafsshield.ui.settings.SettingsFragment"
+        android:label="Settings" />
+</navigation>

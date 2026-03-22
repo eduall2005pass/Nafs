@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NafsShield</string>
+    <string name="accessibility_service_label">NafsShield Accessibility Service</string>
+    <string name="accessibility_service_description">NafsShield blocked apps, browsers এবং keywords detect করার জন্য এই service ব্যবহার করে।</string>
+
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_keywords">Keywords</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="setup_pin_title">PIN সেট করুন</string>
+    <string name="setup_pin_subtitle">NafsShield সুরক্ষিত রাখতে ৪ সংখ্যার PIN বেছে নিন</string>
+    <string name="verify_pin_title">PIN দিন</string>
+    <string name="verify_pin_subtitle">NafsShield খুলতে আপনার PIN দিন</string>
+    <string name="pin_mismatch">PIN মিলছে না। আবার চেষ্টা করুন।</string>
+    <string name="pin_wrong">ভুল PIN। বাকি চেষ্টা: %d</string>
+    <string name="pin_locked">অ্যাকাউন্ট লক। %d সেকেন্ড অপেক্ষা করুন।</string>
+
+    <string name="guard_status_on">সুরক্ষা সক্রিয় ✅</string>
+    <string name="guard_status_off">সুরক্ষা নিষ্ক্রিয়</string>
+
+    <string name="no_blocked_apps">কোনো app block করা নেই\nউপরে + চাপুন</string>
+    <string name="no_keywords">কোনো keyword নেই\nউপরে যোগ করুন</string>
+    <string name="keyword_empty_error">Keyword খালি রাখা যাবে না</string>
+    <string name="add_keyword_hint">নতুন keyword লিখুন…</string>
+    <string name="add_keyword">যোগ করুন</string>
+    
+    <!-- Developer Info -->
+    <string name="developer_name">siam.jpg</string>
+    <string name="developer_id">Siam-293</string>
+    <string name="developer_code">Sh-20</string>
+    <string name="developed_by">Developed by</string>
+    <string name="app_version">Version 2.2</string>
+</resources>
