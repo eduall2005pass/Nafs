@@ -45,7 +45,6 @@ class NafsVpnService : VpnService() {
     }
 
     private fun startVpn() {
-        // Foreground notification আগে — crash এড়াতে
         ensureNotificationChannel()
         startForeground(Constants.NOTIF_ID_VPN, buildVpnNotification())
 
@@ -56,7 +55,6 @@ class NafsVpnService : VpnService() {
             .setSession("NafsShield VPN")
             .setBlocking(true)
 
-        // সব app এর traffic route করো (কোনো app exclude নেই)
         try {
             vpnInterface = builder.establish()
         } catch (e: Exception) {
@@ -173,25 +171,23 @@ class NafsVpnService : VpnService() {
         }
     }
 
-    private fun parseDnsDomain(dns: ByteArray): String? {
-        return try {
-            if (dns.size < 13) {
-                null
-            } else {
-                val sb = StringBuilder()
-                var i = 12
-                while (i < dns.size) {
-                    val len = dns[i].toInt() and 0xFF
-                    if (len == 0) break
-                    if (sb.isNotEmpty()) sb.append('.')
-                    i++
-                    if (i + len > dns.size) return null
-                    sb.append(String(dns, i, len))
-                    i += len
-                }
-                sb.toString()
+    private fun parseDnsDomain(dns: ByteArray): String? = try {
+        if (dns.size < 13) null
+        else {
+            val sb = StringBuilder()
+            var i = 12
+            while (i < dns.size) {
+                val len = dns[i].toInt() and 0xFF
+                if (len == 0) break
+                if (sb.isNotEmpty()) sb.append('.')
+                i++
+                if (i + len > dns.size) return null
+                sb.append(String(dns, i, len))
+                i += len
             }
-        } catch (e: Exception) { null }
+            sb.toString()
+        }
+    } catch (e: Exception) { null }
 
     private fun buildNxDomainResponse(query: ByteArray): ByteArray {
         val r = query.copyOf()
@@ -274,7 +270,7 @@ class NafsVpnService : VpnService() {
         running.set(false)
         isRunning = false
         scope.cancel()
-        try { vpnInterface?.close() } catch (e: Exception) { /* ignore */ }
+        try { vpnInterface?.close() } catch (e: Exception) { }
         vpnInterface = null
         stopForeground(true)
         stopSelf()
@@ -285,7 +281,6 @@ class NafsVpnService : VpnService() {
         super.onDestroy()
     }
 
-    // Samsung A35: task remove এ service restart
     override fun onRevoke() {
         Log.w(TAG, "VPN revoked by system")
         stopVpn()
