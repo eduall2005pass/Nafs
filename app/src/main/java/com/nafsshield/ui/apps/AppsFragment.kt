@@ -77,10 +77,20 @@ class AppsFragment : Fragment() {
 
     private fun showAppPicker() {
         val apps = viewModel.installedApps.value ?: emptyList()
-        if (apps.isEmpty()) { 
+        if (apps.isEmpty()) {
             viewModel.loadInstalledApps()
-            return 
+            viewModel.installedApps.observe(viewLifecycleOwner) { loaded ->
+                if (loaded.isNotEmpty()) {
+                    viewModel.installedApps.removeObservers(viewLifecycleOwner)
+                    openAppPickerNow(loaded)
+                }
+            }
+            return
         }
+        openAppPickerNow(apps)
+    }
+
+    private fun openAppPickerNow(apps: List<AppInfo>) {
 
         // Create dialog with RecyclerView
         val dialogView = layoutInflater.inflate(R.layout.dialog_app_picker, null)
