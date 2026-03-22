@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var pinManager: PinManager
     private var wentToBackground = false
+    private var isPinLaunching = false
 
     // VPN permission launcher
     private val vpnLauncher = registerForActivityResult(
@@ -44,11 +45,10 @@ class MainActivity : AppCompatActivity() {
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        isPinLaunching = false
         if (result.resultCode == RESULT_OK) {
-            // PIN সফল — app ready
             wentToBackground = false
         } else {
-            // PIN বাতিল → app বন্ধ
             finishAffinity()
         }
     }
@@ -86,7 +86,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (!isChangingConfigurations) {
+        // PIN screen নিজে launch করলে background count করবো না
+        if (!isChangingConfigurations && !isPinLaunching) {
             wentToBackground = true
             PinActivity.isVerified = false
         }
@@ -101,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         // Task switcher থেকে ফিরলে PIN চাও
         if (wentToBackground && !PinActivity.isVerified) {
             wentToBackground = false
+            isPinLaunching = true
             pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
             })
