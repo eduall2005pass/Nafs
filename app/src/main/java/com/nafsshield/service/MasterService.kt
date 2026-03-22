@@ -142,19 +142,11 @@ class MasterService : LifecycleService() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
-        val stopIntent = PendingIntent.getService(
-            this, 1,
-            Intent(this, MasterService::class.java).apply {
-                action = Constants.ACTION_STOP_MASTER
-            },
-            PendingIntent.FLAG_IMMUTABLE
-        )
         return NotificationCompat.Builder(this, Constants.CHANNEL_ID_GUARD)
             .setContentTitle("NafsShield সক্রিয় 🛡️")
             .setContentText("সুরক্ষা চলছে — আজ ${totalBlockedToday}টি ব্লক")
             .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setContentIntent(openIntent)
-            .addAction(android.R.drawable.ic_delete, "বন্ধ করুন", stopIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
