@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
             })
-            // finish() সরানো হয়েছে — crash fix
+            finish()
             return
         }
 
