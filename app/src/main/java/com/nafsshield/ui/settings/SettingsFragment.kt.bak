@@ -283,15 +283,6 @@ class SettingsFragment : Fragment() {
 
     private fun setupSecurity(view: View) {
         view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
-            // startActivity() না — launcher use করো
-            // না হলে onStop() isVerified=false করে, ফিরলে আবার verify আসে
-            (requireActivity() as MainActivity).pinChangeLauncher.launch(
-                Intent(requireContext(), PinActivity::class.java).apply {
-                    putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
-                }
-            )
-        }
-            // না হলে onStop() isVerified=false করে দেয়, ফিরলে আবার verify আসে
             (requireActivity() as MainActivity).pinChangeLauncher.launch(
                 Intent(requireContext(), PinActivity::class.java).apply {
                     putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
@@ -303,7 +294,6 @@ class SettingsFragment : Fragment() {
         }
         updateAdminStatus()
     }
-
     private fun updateAdminStatus() {
         val dpm    = requireContext().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val admin  = ComponentName(requireContext(), NafsDeviceAdmin::class.java)
