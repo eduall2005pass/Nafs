@@ -112,7 +112,13 @@ class NafsAccessibilityService : AccessibilityService() {
             return
         }
         
-        // 6. App Info screen - detect NafsShield app info page
+        // 6. Device Admin deactivate screen — block completely
+        if (Constants.DEVICE_ADMIN_ACTIVITIES.any { cls.contains(it) || pkg.contains(it) }) {
+            handleDeviceAdminScreen()
+            return
+        }
+
+        // 7. App Info screen - detect NafsShield app info page
         if (Constants.APP_INFO_ACTIVITIES.any { cls.contains(it) }) {
             handleAppInfoScreen(event)
             return
@@ -191,6 +197,22 @@ class NafsAccessibilityService : AccessibilityService() {
         }
     }
     
+    private fun handleDeviceAdminScreen() {
+        // Device Admin deactivate screen খুললেই block করো
+        Log.d(TAG, "⛔ Device Admin deactivate screen detected — blocking!")
+        // Immediately go back multiple times
+        repeat(5) { performGlobalAction(GLOBAL_ACTION_BACK) }
+        mainHandler.postDelayed({
+            performGlobalAction(GLOBAL_ACTION_HOME)
+            overlayManager.showPersistentBlockOverlay(
+                "⛔ NafsShield সরানো যাবে না!\n\n" +
+                "Device Admin নিষ্ক্রিয় করতে PIN প্রয়োজন।\n\n" +
+                "অ্যাপটি সুরক্ষিত আছে।",
+                6000
+            )
+        }, 50)
+    }
+
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
         // Check if this is showing NafsShield's app info
         mainHandler.postDelayed({

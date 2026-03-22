@@ -118,6 +118,14 @@ object Constants {
         "UninstallAppProgress"
     )
     
+    // Device Admin deactivate screen — block করো
+    val DEVICE_ADMIN_ACTIVITIES = setOf(
+        "com.android.settings.DeviceAdminAdd",
+        "com.samsung.android.settings.DeviceAdminAdd",
+        "DeviceAdminAdd",
+        "com.android.settings.applications.specialaccess.deviceadmin.DeviceAdminAdd"
+    )
+
     // App Info / App Details activity class names
     val APP_INFO_ACTIVITIES = setOf(
         "com.android.settings.applications.InstalledAppDetails",
