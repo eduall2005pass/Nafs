@@ -243,18 +243,23 @@ class SettingsFragment : Fragment() {
             when (val r = pinManager.verifyPin(pin)) {
                 is com.nafsshield.util.PinResult.Correct -> {
                     dialog.dismiss()
+                    // Step 1: UninstallGuard grant করো
                     com.nafsshield.util.UninstallGuard.grant()
+                    // Step 2: Device Admin remove করো
                     val dpm = requireContext()
                         .getSystemService(android.content.Context.DEVICE_POLICY_SERVICE)
                         as android.app.admin.DevicePolicyManager
                     val admin = android.content.ComponentName(
                         requireContext(), com.nafsshield.admin.NafsDeviceAdmin::class.java)
                     if (dpm.isAdminActive(admin)) dpm.removeActiveAdmin(admin)
+                    // Step 3: Accessibility Service বন্ধ করে দাও
+                    com.nafsshield.service.NafsAccessibilityService.instance?.disableSelf()
+                    // Step 4: 1 সেকেন্ড delay দিয়ে uninstall screen খোলো
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         val uri = android.net.Uri.parse("package:${requireContext().packageName}")
                         startActivity(android.content.Intent(
                             android.content.Intent.ACTION_UNINSTALL_PACKAGE, uri))
-                    }, 600)
+                    }, 1000)
                 }
                 is com.nafsshield.util.PinResult.Wrong -> {
                     dialog.dismiss()
