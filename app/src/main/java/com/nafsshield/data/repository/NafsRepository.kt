@@ -62,4 +62,14 @@ class NafsRepository private constructor(context: Context) {
                 INSTANCE ?: NafsRepository(context).also { INSTANCE = it }
             }
     }
+
+    suspend fun getWeeklyLogs(): List<com.nafsshield.data.model.BlockLog> {
+        return try {
+            val cal = java.util.Calendar.getInstance()
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -7)
+            db.blockLogDao().getLogsAfterDate(java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(cal.time))
+        } catch (e: Exception) { emptyList() }
+    }
+    suspend fun getBlockedPackagesDirect(): Set<String> =
+        try { db.blockedAppDao().getBlockedPackages().toSet() } catch (e: Exception) { emptySet() }
 }

@@ -12,6 +12,9 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.nafsshield.R
 import com.nafsshield.ui.MainActivity
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import com.nafsshield.admin.NafsDeviceAdmin
 import com.nafsshield.util.PinManager
 import com.nafsshield.util.PinResult
 
@@ -22,6 +25,8 @@ class PinActivity : AppCompatActivity() {
         const val MODE_SETUP  = "setup"
         const val MODE_VERIFY = "verify"
         const val MODE_CHANGE = "change"
+        const val MODE_VERIFY_ADMIN = "verify_admin"
+        const val MODE_SETTINGS_ACCESS = "settings_access"
 
         @Volatile var isVerified = false
     }
@@ -131,6 +136,14 @@ class PinActivity : AppCompatActivity() {
         when (setupStep) {
             1 -> when (pinManager.verifyPin(pin)) {
                 is PinResult.Correct -> {
+                    when (intent.getStringExtra(MODE)) {
+                        MODE_VERIFY_ADMIN -> {
+                            val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                            dpm.removeActiveAdmin(ComponentName(this, NafsDeviceAdmin::class.java))
+                            finish(); return
+                        }
+                        MODE_SETTINGS_ACCESS -> { finish(); return }
+                    }
                     setupStep = 2; resetInput()
                     tvTitle.text = "নতুন PIN দিন"; tvSubtitle.text = ""
                 }

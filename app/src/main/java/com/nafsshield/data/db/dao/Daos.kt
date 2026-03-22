@@ -6,6 +6,9 @@ import com.nafsshield.data.model.*
 
 @Dao
 interface BlockedAppDao {
+    @Query("SELECT packageName FROM blocked_apps")
+    suspend fun getBlockedPackages(): List<String>
+
     @Query("SELECT * FROM blocked_apps WHERE isActive = 1 ORDER BY appName ASC")
     fun getAllActive(): LiveData<List<BlockedApp>>
 
@@ -63,6 +66,9 @@ interface AllowedBrowserDao {
 
 @Dao
 interface BlockLogDao {
+    @Query("SELECT * FROM block_logs WHERE date(timestamp/1000,'unixepoch') >= :fromDate ORDER BY timestamp DESC")
+    suspend fun getLogsAfterDate(fromDate: String): List<com.nafsshield.data.model.BlockLog>
+
     @Query("SELECT * FROM block_logs ORDER BY timestamp DESC LIMIT 50")
     fun getRecent(): LiveData<List<BlockLog>>
 

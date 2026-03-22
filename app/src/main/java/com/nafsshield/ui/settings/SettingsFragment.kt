@@ -109,7 +109,7 @@ class SettingsFragment : Fragment() {
         }
 
         view.findViewById<MaterialButton>(R.id.btnAddBrowser).setOnClickListener {
-            showBrowserPicker()
+            verifyPinThenDo("🌐 Browser যোগ করতে PIN দিন") { showBrowserPicker() }
         }
     }
     
@@ -238,6 +238,18 @@ class SettingsFragment : Fragment() {
                 .show()
             etPin.requestFocus()
         }
+    }
+
+    private fun verifyPinThenDo(msg: String, action: () -> Unit) {
+        val dv = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
+        val et = dv.findViewById<TextInputEditText>(R.id.etPinVerify)
+        AlertDialog.Builder(requireContext())
+            .setTitle("🔒 PIN নিশ্চিত করুন").setMessage(msg).setView(dv)
+            .setPositiveButton("নিশ্চিত") { _, _ ->
+                if (pinManager.verifyPin(et.text?.toString() ?: "") == PinResult.Correct) action()
+                else Snackbar.make(requireView(), "❌ ভুল PIN!", Snackbar.LENGTH_LONG).show()
+            }.setNegativeButton("বাতিল", null).show()
+        et.requestFocus()
     }
 
     private fun setupSecurity(view: View) {
