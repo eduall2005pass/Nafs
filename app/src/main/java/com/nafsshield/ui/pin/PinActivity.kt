@@ -140,6 +140,8 @@ class PinActivity : AppCompatActivity() {
         } else {
             if (pin == firstPin) {
                 pinManager.setPin(pin)
+                // Setup এর পর isVerified = true করো
+                isVerified = true
                 showSuccess("PIN সেট হয়েছে ✅")
                 goToMain()
             } else {
