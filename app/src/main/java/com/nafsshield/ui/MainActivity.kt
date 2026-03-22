@@ -40,19 +40,27 @@ class MainActivity : AppCompatActivity() {
         // Admin status will update in onResume of SettingsFragment
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (!isChangingConfigurations) PinActivity.isVerified = false
+    private var lastPausedTime = 0L
+    private val LOCK_TIMEOUT_MS = 30_000L  // 30 সেকেন্ড background এ থাকলে PIN চাইবে
+
+    override fun onPause() {
+        super.onPause()
+        if (!isChangingConfigurations) {
+            lastPausedTime = System.currentTimeMillis()
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (::pinManager.isInitialized && pinManager.isPinSetup && !PinActivity.isVerified) {
-            startActivity(Intent(this, PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            })
-            finish()
+    override fun onResume() {
+        super.onResume()
+        if (!isChangingConfigurations && pinManager.isPinSetup && !PinActivity.isVerified) {
+            val elapsed = System.currentTimeMillis() - lastPausedTime
+            // শুধু 30 সেকেন্ডের বেশি background এ থাকলে PIN চাইবে
+            if (elapsed > LOCK_TIMEOUT_MS || lastPausedTime == 0L) {
+                startActivity(Intent(this, PinActivity::class.java).apply {
+                    putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                })
+            }
         }
     }
 
