@@ -297,9 +297,8 @@ class PinActivity : AppCompatActivity() {
     }
 
     private fun goToMain() {
-        startActivity(Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        })
+        // নতুন MainActivity launch করবো না — RESULT_OK দিয়ে ফিরে যাবো
+        setResult(RESULT_OK)
         finish()
     }
 

@@ -28,24 +28,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pinManager: PinManager
     private var wentToBackground = false
 
+    // VPN permission launcher
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) startGuard()
     }
 
+    // Device admin launcher
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
+    // PIN screen launcher — result এ app দেখাবে বা বন্ধ করবে
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == RESULT_OK || PinActivity.isVerified) {
-            // PIN সফল — app দেখাও
+        if (result.resultCode == RESULT_OK) {
+            // PIN সফল — app ready
             wentToBackground = false
         } else {
-            // PIN বাতিল বা ভুল — app বন্ধ করো
+            // PIN বাতিল → app বন্ধ
             finishAffinity()
         }
     }
@@ -56,20 +59,19 @@ class MainActivity : AppCompatActivity() {
 
         // PIN setup হয়নি → setup screen
         if (!pinManager.isPinSetup) {
-            startActivity(Intent(this, PinActivity::class.java).apply {
+            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_SETUP)
             })
-            finish()
-            return
+            // Setup হওয়ার পরেও app চলবে
         }
-
         // PIN verify হয়নি → verify screen
-        if (!PinActivity.isVerified) {
+        else if (!PinActivity.isVerified) {
             pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
             })
         }
 
+        // Layout সবসময় load করো — PIN screen এর পেছনে থাকবে
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setupNavigation()
@@ -77,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         if (!Settings.canDrawOverlays(this)) {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
         }
-
         if (pinManager.isMasterEnabled && !MasterService.isRunning) {
             checkAndStartGuard()
         }
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         if (!::pinManager.isInitialized) return
         if (!pinManager.isPinSetup) return
 
+        // Task switcher থেকে ফিরলে PIN চাও
         if (wentToBackground && !PinActivity.isVerified) {
             wentToBackground = false
             pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
