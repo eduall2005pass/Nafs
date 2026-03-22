@@ -28,7 +28,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var pinManager: PinManager
     private var wentToBackground = false
-    private var isPinActive = false
+
+    // এই flag true থাকলে onStop() isVerified reset করবে না
+    private var isLaunchingExternalScreen = false
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -43,18 +45,16 @@ class MainActivity : AppCompatActivity() {
     private val overlayLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        isPinActive = false  // overlay screen থেকে ফিরলে reset
-        if (Settings.canDrawOverlays(this@MainActivity)) {
-            if (pinManager.isMasterEnabled && !MasterService.isRunning) {
-                checkAndStartGuard()
-            }
+        isLaunchingExternalScreen = false
+        if (pinManager.isMasterEnabled && !MasterService.isRunning) {
+            checkAndStartGuard()
         }
     }
 
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        isPinActive = false
+        isLaunchingExternalScreen = false
         if (result.resultCode == RESULT_OK) {
             PinActivity.isVerified = true
             wentToBackground = false
@@ -69,8 +69,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // setContentView সবার আগে — NavHostFragment inflate এর জন্য জরুরি
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
@@ -81,25 +79,29 @@ class MainActivity : AppCompatActivity() {
             when {
                 !pinManager.isPinSetup  -> launchPin(PinActivity.MODE_SETUP)
                 !PinActivity.isVerified -> launchPin(PinActivity.MODE_VERIFY)
+                else -> checkOverlayAndStart()
             }
         }
+    }
 
+    // PIN verify হলে overlay check করো
+    private fun checkOverlayAndStart() {
         if (!Settings.canDrawOverlays(this)) {
-            isPinActive = true  // overlay screen এ গেলে isVerified=false হবে না
+            isLaunchingExternalScreen = true
             overlayLauncher.launch(
                 Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
                     data = Uri.parse("package:$packageName")
                 }
             )
-        }
-        if (pinManager.isMasterEnabled && !MasterService.isRunning) {
+        } else if (pinManager.isMasterEnabled && !MasterService.isRunning) {
             checkAndStartGuard()
         }
     }
 
     override fun onStop() {
         super.onStop()
-        if (!isChangingConfigurations && !isPinActive) {
+        // External screen (overlay/PIN) চলাকালে বা rotation এ reset করবো না
+        if (!isChangingConfigurations && !isLaunchingExternalScreen) {
             wentToBackground = true
             PinActivity.isVerified = false
         }
@@ -110,7 +112,8 @@ class MainActivity : AppCompatActivity() {
         if (isChangingConfigurations) return
         if (!::pinManager.isInitialized) return
         if (!pinManager.isPinSetup) return
-        if (isPinActive) return
+        if (isLaunchingExternalScreen) return
+
         if (wentToBackground && !PinActivity.isVerified) {
             launchPin(PinActivity.MODE_VERIFY)
             wentToBackground = false
@@ -118,8 +121,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun launchPin(mode: String) {
-        if (isPinActive) return
-        isPinActive = true
+        if (isLaunchingExternalScreen) return
+        isLaunchingExternalScreen = true
         pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
             putExtra(PinActivity.MODE, mode)
         })
