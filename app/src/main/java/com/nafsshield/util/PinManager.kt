@@ -72,7 +72,7 @@ class PinManager(context: Context) {
             val attempts = prefs.getInt(Constants.KEY_FAILED_ATTEMPTS, 0) + 1
             prefs.edit().putInt(Constants.KEY_FAILED_ATTEMPTS, attempts).apply()
             if (attempts >= Constants.MAX_FAILED_ATTEMPTS) {
-                val lockCount = prefs.getInt(Constants.KEY_LOCKOUT_COUNT, 0)
+                val lockCount  = prefs.getInt(Constants.KEY_LOCKOUT_COUNT, 0)
                 val lockDur   = Constants.LOCKOUT_DURATION_MS +
                                 (Constants.LOCKOUT_INCREMENT_MS * lockCount)
                 prefs.edit()
