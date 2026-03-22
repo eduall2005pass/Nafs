@@ -284,6 +284,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun handleDeviceAdminScreen() {
+        if (isInGracePeriod()) return
         Log.d(TAG, "🔒 Device Admin screen — launching PIN")
         startActivity(android.content.Intent(this,
             com.nafsshield.ui.pin.PinActivity::class.java).apply {
@@ -295,6 +296,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
+        if (isInGracePeriod()) return
         // Check if this is showing NafsShield's app info
         mainHandler.postDelayed({
             val root = rootInActiveWindow
@@ -328,6 +330,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleSettingsScreen(event: AccessibilityEvent) {
+        if (isInGracePeriod()) return
         // Immediately block if accessing NafsShield's app info
         val root = rootInActiveWindow
         if (root != null) {
@@ -536,6 +539,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkAndBlockStopButton() {
+        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
