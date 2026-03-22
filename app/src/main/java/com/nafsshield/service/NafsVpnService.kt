@@ -179,22 +179,23 @@ class NafsVpnService : VpnService() {
 
     private fun parseDnsDomain(dns: ByteArray): String? {
         return try {
-        if (dns.size < 13) null
-        else {
-            val sb = StringBuilder()
-            var i = 12
-            while (i < dns.size) {
-                val len = dns[i].toInt() and 0xFF
-                if (len == 0) break
-                if (sb.isNotEmpty()) sb.append('.')
-                i++
-                if (i + len > dns.size) return null
-                sb.append(String(dns, i, len))
-                i += len
+            if (dns.size < 13) {
+                null
+            } else {
+                val sb = StringBuilder()
+                var i = 12
+                while (i < dns.size) {
+                    val len = dns[i].toInt() and 0xFF
+                    if (len == 0) break
+                    if (sb.isNotEmpty()) sb.append('.')
+                    i++
+                    if (i + len > dns.size) return null
+                    sb.append(String(dns, i, len))
+                    i += len
+                }
+                sb.toString()
             }
-            sb.toString()
-        }
-    }
+        } catch (e: Exception) { null }
     } catch (e: Exception) { null }
 
     private fun buildNxDomainResponse(query: ByteArray): ByteArray {
