@@ -25,8 +25,8 @@ import com.nafsshield.ui.MainActivity
 import com.nafsshield.ui.pin.PinActivity
 import com.nafsshield.util.Constants
 import com.nafsshield.util.PinManager
+import com.nafsshield.util.PinResult
 import com.nafsshield.viewmodel.MainViewModel
-import android.content.Intent
 
 class SettingsFragment : Fragment() {
 
@@ -122,7 +122,7 @@ class SettingsFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("সরিয়ে দিন") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
-                if (pinManager.verifyPin(enteredPin)) {
+                if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.removeBrowser(browser)
                     Snackbar.make(requireView(), "${browser.browserName} সরিয়ে দেওয়া হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
                 } else {
