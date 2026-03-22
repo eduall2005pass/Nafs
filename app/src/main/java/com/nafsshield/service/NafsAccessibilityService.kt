@@ -226,6 +226,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun checkForNafsShieldInSettings() {
+        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
