@@ -22,10 +22,6 @@
         android:name="com.nafsshield.ui.settings.SettingsFragment"
         android:label="Settings" />
     <fragment
-        android:id="@+id/reportFragment"
-        android:name="com.nafsshield.ui.report.ReportFragment"
-        android:label="Report" />
-    <fragment
         android:id="@+id/websitesFragment"
         android:name="com.nafsshield.ui.websites.WebsitesFragment"
         android:label="Sites" />
