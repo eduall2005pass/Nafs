@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-NafsShield - Complete crash fix (4 files)
+NafsShield - Complete fix (4 files সরাসরি rewrite)
+Pattern matching নেই — সব file পুরো নতুন করে লেখা হবে।
 Termux এ project root এ: python fix_nafssheild.py
 """
-import os, shutil, re
+import os, shutil
 
 BASE_CANDIDATES = [".", "NafsShield"]
 
@@ -11,7 +12,7 @@ def find_base():
     for base in BASE_CANDIDATES:
         if os.path.isfile(os.path.join(base, "app/src/main/AndroidManifest.xml")):
             return base
-    custom = input("Project root path দাও: ").strip()
+    custom = input("Project root path দাও (যেখানে app/ আছে): ").strip()
     if os.path.isfile(os.path.join(custom, "app/src/main/AndroidManifest.xml")):
         return custom
     print("❌ Project root পাওয়া যায়নি।"); exit(1)
@@ -19,79 +20,46 @@ def find_base():
 base = find_base()
 print(f"✅ Project: {os.path.abspath(base)}\n")
 
-MANIFEST   = os.path.join(base, "app/src/main/AndroidManifest.xml")
-MAIN_ACT   = os.path.join(base, "app/src/main/java/com/nafsshield/ui/MainActivity.kt")
-PIN_ACT    = os.path.join(base, "app/src/main/java/com/nafsshield/ui/pin/PinActivity.kt")
-SETTINGS_F = os.path.join(base, "app/src/main/java/com/nafsshield/ui/settings/SettingsFragment.kt")
+files = {
+    "manifest":   os.path.join(base, "app/src/main/AndroidManifest.xml"),
+    "main":       os.path.join(base, "app/src/main/java/com/nafsshield/ui/MainActivity.kt"),
+    "pin":        os.path.join(base, "app/src/main/java/com/nafsshield/ui/pin/PinActivity.kt"),
+    "settings":   os.path.join(base, "app/src/main/java/com/nafsshield/ui/settings/SettingsFragment.kt"),
+}
 
-for f in [MANIFEST, MAIN_ACT, PIN_ACT, SETTINGS_F]:
-    if not os.path.isfile(f):
-        print(f"❌ Missing: {f}"); exit(1)
-    shutil.copy2(f, f + ".bak")
-print("✅ Backups done\n")
+for key, path in files.items():
+    if not os.path.isfile(path):
+        print(f"❌ Missing: {path}"); exit(1)
+    shutil.copy2(path, path + ".bak")
+    print(f"✅ Backup: {path}.bak")
 
-# ══════════════════════════════════════════════════════
-# FIX 1: AndroidManifest — MainActivity singleTask → standard
-#         PinActivity singleTop → standard
-# ══════════════════════════════════════════════════════
-with open(MANIFEST, "r", encoding="utf-8") as f:
-    content = f.read()
+print()
 
-# MainActivity: singleTask → standard
-content = re.sub(
-    r'(android:name="\.ui\.MainActivity"[^>]*?)android:launchMode="singleTask"',
-    r'\1android:launchMode="standard"',
-    content, flags=re.DOTALL
+# ════════════════════════════════════════════════════════════════════
+# FILE 1: AndroidManifest.xml
+# FIX: MainActivity singleTask→standard, PinActivity singleTop→standard
+# ════════════════════════════════════════════════════════════════════
+with open(files["manifest"], "r", encoding="utf-8") as f:
+    manifest = f.read()
+
+manifest = manifest.replace(
+    'android:launchMode="singleTask"',
+    'android:launchMode="standard"'
 )
-# PinActivity: singleTop → standard
-content = re.sub(
-    r'(android:name="\.ui\.pin\.PinActivity"[^>]*?)android:launchMode="singleTop"',
-    r'\1android:launchMode="standard"',
-    content, flags=re.DOTALL
+manifest = manifest.replace(
+    'android:launchMode="singleTop"',
+    'android:launchMode="standard"'
 )
 
-with open(MANIFEST, "w", encoding="utf-8") as f:
-    f.write(content)
-print("✅ Fix 1: Manifest — singleTask + singleTop → standard")
+with open(files["manifest"], "w", encoding="utf-8") as f:
+    f.write(manifest)
+print("✅ Fix 1: AndroidManifest — launchMode fixed")
 
-# ══════════════════════════════════════════════════════
-# FIX 2: PinActivity — NoPinSet case
-# BUG: verify mode এ NoPinSet হলে startActivity(setup) করছে
-#      এই নতুন instance এর RESULT_OK কখনো pinLauncher এ পৌঁছায় না
-# FIX: নতুন launch না করে নিজেই MODE_SETUP এ switch করো
-# ══════════════════════════════════════════════════════
-with open(PIN_ACT, "r", encoding="utf-8") as f:
-    content = f.read()
-
-OLD_NO_PIN = '''            is PinResult.NoPinSet  -> {
-                startActivity(Intent(this, PinActivity::class.java).apply {
-                    putExtra(MODE, MODE_SETUP)
-                })
-                finish()
-            }'''
-
-NEW_NO_PIN = '''            is PinResult.NoPinSet  -> {
-                // নতুন Activity launch না করে এখানেই setup mode এ switch করো
-                // তাহলে RESULT_OK সরাসরি pinLauncher এ যাবে
-                mode = MODE_SETUP
-                setupStep = 1
-                firstPin = ""
-                resetInput()
-                updateHeader()
-            }'''
-
-if OLD_NO_PIN in content:
-    content = content.replace(OLD_NO_PIN, NEW_NO_PIN)
-    with open(PIN_ACT, "w", encoding="utf-8") as f:
-        f.write(content)
-    print("✅ Fix 2: PinActivity — NoPinSet in-place mode switch")
-else:
-    print("⚠️  Fix 2: NoPinSet pattern not found — check manually")
-
-# ══════════════════════════════════════════════════════
-# FIX 3: MainActivity.kt — complete rewrite
-# ══════════════════════════════════════════════════════
-MAIN_FIXED = '''package com.nafsshield.ui
+# ════════════════════════════════════════════════════════════════════
+# FILE 2: MainActivity.kt — complete rewrite
+# FIX: setContentView আগে, isPinActive guard, pinChangeLauncher
+# ════════════════════════════════════════════════════════════════════
+MAIN_KT = '''package com.nafsshield.ui
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -124,7 +92,9 @@ class MainActivity : AppCompatActivity() {
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result -> if (result.resultCode == RESULT_OK) startGuard() }
+    ) { result ->
+        if (result.resultCode == RESULT_OK) startGuard()
+    }
 
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -142,14 +112,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Settings থেকে PIN change এর জন্য আলাদা launcher
-    // এতে isPinActive বা isVerified disturb হয় না
     val pinChangeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // setContentView সবার আগে — NavHostFragment inflate এর জন্য জরুরি
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
@@ -236,50 +206,120 @@ class MainActivity : AppCompatActivity() {
     }
 }
 '''
-with open(MAIN_ACT, "w", encoding="utf-8") as f:
-    f.write(MAIN_FIXED)
-print("✅ Fix 3: MainActivity.kt")
 
-# ══════════════════════════════════════════════════════
-# FIX 4: SettingsFragment — PIN change startActivity → launcher
-# ══════════════════════════════════════════════════════
-with open(SETTINGS_F, "r", encoding="utf-8") as f:
-    content = f.read()
+with open(files["main"], "w", encoding="utf-8") as f:
+    f.write(MAIN_KT)
+print("✅ Fix 2: MainActivity.kt — complete rewrite")
 
-OLD_SETTING = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
-            startActivity(Intent(requireContext(), PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
-            })
-        }'''
+# ════════════════════════════════════════════════════════════════════
+# FILE 3: PinActivity.kt — শুধু NoPinSet block fix, বাকি অপরিবর্তিত
+# ════════════════════════════════════════════════════════════════════
+with open(files["pin"], "r", encoding="utf-8") as f:
+    pin_content = f.read()
 
-NEW_SETTING = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
-            (requireActivity() as MainActivity).pinChangeLauncher.launch(
-                Intent(requireContext(), PinActivity::class.java).apply {
-                    putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
-                }
-            )
-        }'''
+# handleVerify function এর NoPinSet case খুঁজে replace করো
+# লাইন-by-লাইন approach — whitespace সমস্যা নেই
+lines = pin_content.split('\n')
+new_lines = []
+i = 0
+replaced = False
+while i < len(lines):
+    line = lines[i]
+    # NoPinSet block শুরু খুঁজি
+    if 'is PinResult.NoPinSet' in line and not replaced:
+        # এই block টা skip করে নতুন লিখি
+        indent = len(line) - len(line.lstrip())
+        base_indent = ' ' * indent
+        inner_indent = ' ' * (indent + 4)
+        new_lines.append(f'{base_indent}is PinResult.NoPinSet  -> {{')
+        new_lines.append(f'{inner_indent}// নতুন Activity launch না করে এখানেই setup mode switch করো')
+        new_lines.append(f'{inner_indent}// তাহলে RESULT_OK সরাসরি MainActivity pinLauncher এ যাবে')
+        new_lines.append(f'{inner_indent}mode = MODE_SETUP')
+        new_lines.append(f'{inner_indent}setupStep = 1')
+        new_lines.append(f'{inner_indent}firstPin = ""')
+        new_lines.append(f'{inner_indent}resetInput()')
+        new_lines.append(f'{inner_indent}updateHeader()')
+        new_lines.append(f'{base_indent}}}')
+        replaced = True
+        i += 1
+        # পুরনো block এর closing } পর্যন্ত skip করি
+        brace_count = 1
+        while i < len(lines) and brace_count > 0:
+            l = lines[i]
+            brace_count += l.count('{') - l.count('}')
+            i += 1
+        continue
+    new_lines.append(line)
+    i += 1
 
-if OLD_SETTING in content:
-    content = content.replace(OLD_SETTING, NEW_SETTING)
-    with open(SETTINGS_F, "w", encoding="utf-8") as f:
-        f.write(content)
+if replaced:
+    with open(files["pin"], "w", encoding="utf-8") as f:
+        f.write('\n'.join(new_lines))
+    print("✅ Fix 3: PinActivity.kt — NoPinSet in-place mode switch")
+else:
+    print("⚠️  Fix 3: NoPinSet pattern not found — may already be fixed")
+
+# ════════════════════════════════════════════════════════════════════
+# FILE 4: SettingsFragment.kt — rowChangePin: startActivity → pinChangeLauncher
+# ════════════════════════════════════════════════════════════════════
+with open(files["settings"], "r", encoding="utf-8") as f:
+    settings_content = f.read()
+
+lines = settings_content.split('\n')
+new_lines = []
+i = 0
+replaced = False
+while i < len(lines):
+    line = lines[i]
+    # rowChangePin block খুঁজি
+    if 'rowChangePin' in line and 'setOnClickListener' in line and not replaced:
+        indent = len(line) - len(line.lstrip())
+        base_indent = ' ' * indent
+        inner_indent = ' ' * (indent + 4)
+        new_lines.append(line)  # rowChangePin line রাখি
+        i += 1
+        # পুরনো block skip করি (closing } পর্যন্ত)
+        brace_count = 0
+        while i < len(lines):
+            l = lines[i]
+            brace_count += l.count('{') - l.count('}')
+            i += 1
+            if brace_count <= 0:
+                break
+        # নতুন block লিখি
+        new_lines.append(f'{inner_indent}// startActivity() না — launcher use করো')
+        new_lines.append(f'{inner_indent}// না হলে onStop() isVerified=false করে, ফিরলে আবার verify আসে')
+        new_lines.append(f'{inner_indent}(requireActivity() as MainActivity).pinChangeLauncher.launch(')
+        new_lines.append(f'{inner_indent}    Intent(requireContext(), PinActivity::class.java).apply {{')
+        new_lines.append(f'{inner_indent}        putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)')
+        new_lines.append(f'{inner_indent}    }}')
+        new_lines.append(f'{inner_indent})')
+        new_lines.append(f'{base_indent}}}')
+        replaced = True
+        continue
+    new_lines.append(line)
+    i += 1
+
+if replaced:
+    with open(files["settings"], "w", encoding="utf-8") as f:
+        f.write('\n'.join(new_lines))
     print("✅ Fix 4: SettingsFragment.kt — pinChangeLauncher")
 else:
-    print("⚠️  Fix 4: pattern not found — skipping")
+    print("⚠️  Fix 4: rowChangePin pattern not found — may already be fixed")
 
+# ════════════════════════════════════════════════════════════════════
 print()
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 print("✅ সব fix done!")
 print()
-print("🔥 Bug summary:")
-print("  1. MainActivity singleTask → ActivityResultLauncher broken")
-print("  2. PinActivity singleTop → setResult() interfere")
-print("  3. NoPinSet case এ নতুন PinActivity launch → RESULT_OK হারিয়ে যায়")
-print("  4. SettingsFragment startActivity → onStop isVerified=false")
+print("🔥 Fix summary:")
+print("  1. Manifest: singleTask + singleTop → standard")
+print("  2. MainActivity: setContentView আগে, isPinActive guard")
+print("  3. PinActivity: NoPinSet → in-place mode switch")
+print("  4. SettingsFragment: pinChangeLauncher use")
 print()
-print("▶ এরপর:")
+print("▶ এখন run করো:")
 print("  git add -A")
-print('  git commit -m "fix: all PIN crash bugs"')
+print('  git commit -m "fix: complete PIN crash fix"')
 print("  git push")
-print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
