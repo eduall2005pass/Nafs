@@ -313,17 +313,21 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleUninstallScreen() {
-        Log.d(TAG, "⚠️ CRITICAL: Uninstall screen detected!")
-        
-        // Immediate aggressive blocking
-        repeat(3) {
-            performGlobalAction(GLOBAL_ACTION_BACK)
+        // ✅ App এর ভেতর থেকে PIN দিয়ে uninstall করা হলে — block করো না
+        if (com.nafsshield.util.UninstallGuard.isAllowed()) {
+            Log.d(TAG, "✅ User-initiated uninstall — allowing")
+            com.nafsshield.util.UninstallGuard.revoke()  // একবারই allow
+            return
         }
-        
+
+        Log.d(TAG, "⛔ Unauthorized uninstall attempt — blocking!")
+
+        repeat(3) { performGlobalAction(GLOBAL_ACTION_BACK) }
+
         mainHandler.postDelayed({
             performGlobalAction(GLOBAL_ACTION_HOME)
         }, 50)
-        
+
         mainHandler.postDelayed({
             overlayManager.showPersistentBlockOverlay(
                 "⛔ NafsShield আনইনস্টল করা যাবে না!\n\n" +
@@ -332,11 +336,8 @@ class NafsAccessibilityService : AccessibilityService() {
                 8000
             )
         }, 100)
-        
-        // Try to click cancel/back buttons if present
-        mainHandler.postDelayed({
-            tryClickCancelButton()
-        }, 150)
+
+        mainHandler.postDelayed({ tryClickCancelButton() }, 150)
     }
     
     private fun tryClickCancelButton() {
