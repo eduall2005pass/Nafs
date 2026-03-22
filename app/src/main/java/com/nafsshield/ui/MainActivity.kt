@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result -> if (result.resultCode == RESULT_OK) startGuard() }
+    ) { result ->
+        if (result.resultCode == RESULT_OK) startGuard()
+    }
 
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -49,14 +51,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Settings থেকে PIN change এর জন্য আলাদা launcher
-    // এতে isPinActive বা isVerified disturb হয় না
     val pinChangeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // setContentView সবার আগে — NavHostFragment inflate এর জন্য জরুরি
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
