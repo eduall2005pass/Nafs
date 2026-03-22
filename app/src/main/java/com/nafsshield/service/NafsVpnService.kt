@@ -196,7 +196,6 @@ class NafsVpnService : VpnService() {
                 sb.toString()
             }
         } catch (e: Exception) { null }
-    } catch (e: Exception) { null }
 
     private fun buildNxDomainResponse(query: ByteArray): ByteArray {
         val r = query.copyOf()
