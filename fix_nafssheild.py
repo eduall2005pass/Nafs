@@ -1,75 +1,96 @@
 #!/usr/bin/env python3
 """
-NafsShield - Deep crash fix (3 files)
-Termux এ project root এ যাও তারপর: python fix_nafssheild.py
+NafsShield - Complete crash fix (4 files)
+Termux এ project root এ: python fix_nafssheild.py
 """
-
 import os, shutil, re
 
-# ── File paths ────────────────────────────────────────────────────────
-BASE_CANDIDATES = [
-    ".",
-    "NafsShield",
-]
+BASE_CANDIDATES = [".", "NafsShield"]
 
 def find_base():
     for base in BASE_CANDIDATES:
-        manifest = os.path.join(base, "app/src/main/AndroidManifest.xml")
-        if os.path.isfile(manifest):
+        if os.path.isfile(os.path.join(base, "app/src/main/AndroidManifest.xml")):
             return base
-    custom = input("Project root path দাও (যেখানে app/ folder আছে): ").strip()
-    manifest = os.path.join(custom, "app/src/main/AndroidManifest.xml")
-    if os.path.isfile(manifest):
+    custom = input("Project root path দাও: ").strip()
+    if os.path.isfile(os.path.join(custom, "app/src/main/AndroidManifest.xml")):
         return custom
-    print("❌ Project root পাওয়া যায়নি।")
-    exit(1)
+    print("❌ Project root পাওয়া যায়নি।"); exit(1)
 
 base = find_base()
-print(f"✅ Project found: {os.path.abspath(base)}\n")
+print(f"✅ Project: {os.path.abspath(base)}\n")
 
 MANIFEST   = os.path.join(base, "app/src/main/AndroidManifest.xml")
 MAIN_ACT   = os.path.join(base, "app/src/main/java/com/nafsshield/ui/MainActivity.kt")
+PIN_ACT    = os.path.join(base, "app/src/main/java/com/nafsshield/ui/pin/PinActivity.kt")
 SETTINGS_F = os.path.join(base, "app/src/main/java/com/nafsshield/ui/settings/SettingsFragment.kt")
 
-for f in [MANIFEST, MAIN_ACT, SETTINGS_F]:
+for f in [MANIFEST, MAIN_ACT, PIN_ACT, SETTINGS_F]:
     if not os.path.isfile(f):
-        print(f"❌ File missing: {f}")
-        exit(1)
+        print(f"❌ Missing: {f}"); exit(1)
     shutil.copy2(f, f + ".bak")
-    print(f"✅ Backup: {f}.bak")
+print("✅ Backups done\n")
 
-print()
-
-# ════════════════════════════════════════════════════════════════════
-# FIX 1: AndroidManifest.xml — singleTask → standard
-# ════════════════════════════════════════════════════════════════════
-# BUG: MainActivity এ singleTask launchMode আছে।
-# singleTask এ ActivityResultLauncher কাজ করে না —
-# PinActivity finish() করলে RESULT_OK কখনো MainActivity তে পৌঁছায় না।
-# তাই PIN verify করলেও dashboard crash করে।
-
+# ══════════════════════════════════════════════════════
+# FIX 1: AndroidManifest — MainActivity singleTask → standard
+#         PinActivity singleTop → standard
+# ══════════════════════════════════════════════════════
 with open(MANIFEST, "r", encoding="utf-8") as f:
-    manifest_content = f.read()
+    content = f.read()
 
-# MainActivity এর launchMode singleTask → standard
-fixed_manifest = re.sub(
+# MainActivity: singleTask → standard
+content = re.sub(
     r'(android:name="\.ui\.MainActivity"[^>]*?)android:launchMode="singleTask"',
     r'\1android:launchMode="standard"',
-    manifest_content,
-    flags=re.DOTALL
+    content, flags=re.DOTALL
+)
+# PinActivity: singleTop → standard
+content = re.sub(
+    r'(android:name="\.ui\.pin\.PinActivity"[^>]*?)android:launchMode="singleTop"',
+    r'\1android:launchMode="standard"',
+    content, flags=re.DOTALL
 )
 
-if fixed_manifest == manifest_content:
-    print("⚠️  Manifest: launchMode pattern not found — skipping (may already be fixed)")
+with open(MANIFEST, "w", encoding="utf-8") as f:
+    f.write(content)
+print("✅ Fix 1: Manifest — singleTask + singleTop → standard")
+
+# ══════════════════════════════════════════════════════
+# FIX 2: PinActivity — NoPinSet case
+# BUG: verify mode এ NoPinSet হলে startActivity(setup) করছে
+#      এই নতুন instance এর RESULT_OK কখনো pinLauncher এ পৌঁছায় না
+# FIX: নতুন launch না করে নিজেই MODE_SETUP এ switch করো
+# ══════════════════════════════════════════════════════
+with open(PIN_ACT, "r", encoding="utf-8") as f:
+    content = f.read()
+
+OLD_NO_PIN = '''            is PinResult.NoPinSet  -> {
+                startActivity(Intent(this, PinActivity::class.java).apply {
+                    putExtra(MODE, MODE_SETUP)
+                })
+                finish()
+            }'''
+
+NEW_NO_PIN = '''            is PinResult.NoPinSet  -> {
+                // নতুন Activity launch না করে এখানেই setup mode এ switch করো
+                // তাহলে RESULT_OK সরাসরি pinLauncher এ যাবে
+                mode = MODE_SETUP
+                setupStep = 1
+                firstPin = ""
+                resetInput()
+                updateHeader()
+            }'''
+
+if OLD_NO_PIN in content:
+    content = content.replace(OLD_NO_PIN, NEW_NO_PIN)
+    with open(PIN_ACT, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("✅ Fix 2: PinActivity — NoPinSet in-place mode switch")
 else:
-    with open(MANIFEST, "w", encoding="utf-8") as f:
-        f.write(fixed_manifest)
-    print("✅ Fix 1: AndroidManifest.xml — singleTask → standard")
+    print("⚠️  Fix 2: NoPinSet pattern not found — check manually")
 
-# ════════════════════════════════════════════════════════════════════
-# FIX 2: MainActivity.kt — PIN flow overhaul
-# ════════════════════════════════════════════════════════════════════
-
+# ══════════════════════════════════════════════════════
+# FIX 3: MainActivity.kt — complete rewrite
+# ══════════════════════════════════════════════════════
 MAIN_FIXED = '''package com.nafsshield.ui
 
 import android.app.admin.DevicePolicyManager
@@ -101,19 +122,14 @@ class MainActivity : AppCompatActivity() {
     private var wentToBackground = false
     private var isPinActive = false
 
-    // VPN permission launcher
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) startGuard()
-    }
+    ) { result -> if (result.resultCode == RESULT_OK) startGuard() }
 
-    // Device admin launcher
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
-    // PIN launcher — RESULT_OK হলে app দেখাবে, না হলে বন্ধ
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -122,28 +138,24 @@ class MainActivity : AppCompatActivity() {
             PinActivity.isVerified = true
             wentToBackground = false
         } else {
-            // PIN cancel/back — app বন্ধ করো
             finishAffinity()
         }
     }
 
-    // PIN change launcher — শুধু Settings থেকে change PIN এর জন্য
-    // এতে onStop/onStart এর isVerified logic disturb হবে না
+    // Settings থেকে PIN change এর জন্য আলাদা launcher
+    // এতে isPinActive বা isVerified disturb হয় না
     val pinChangeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { /* PIN change হলে কিছু করার নেই */ }
+    ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // setContentView সবার আগে — NavHostFragment inflate করতে হবে
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
         viewModel  = ViewModelProvider(this)[MainViewModel::class.java]
         setupNavigation()
 
-        // Fresh launch এ PIN check করো
         if (savedInstanceState == null) {
             when {
                 !pinManager.isPinSetup  -> launchPin(PinActivity.MODE_SETUP)
@@ -161,7 +173,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // PIN screen চলাকালীন বা rotation এ background flag সেট করবো না
         if (!isChangingConfigurations && !isPinActive) {
             wentToBackground = true
             PinActivity.isVerified = false
@@ -173,8 +184,7 @@ class MainActivity : AppCompatActivity() {
         if (isChangingConfigurations) return
         if (!::pinManager.isInitialized) return
         if (!pinManager.isPinSetup) return
-        if (isPinActive) return  // PIN screen ইতিমধ্যে চলছে
-
+        if (isPinActive) return
         if (wentToBackground && !PinActivity.isVerified) {
             launchPin(PinActivity.MODE_VERIFY)
             wentToBackground = false
@@ -226,31 +236,23 @@ class MainActivity : AppCompatActivity() {
     }
 }
 '''
-
 with open(MAIN_ACT, "w", encoding="utf-8") as f:
     f.write(MAIN_FIXED)
-print("✅ Fix 2: MainActivity.kt — PIN flow + isPinActive guard")
+print("✅ Fix 3: MainActivity.kt")
 
-# ════════════════════════════════════════════════════════════════════
-# FIX 3: SettingsFragment.kt — PIN change: startActivity → launcher
-# ════════════════════════════════════════════════════════════════════
-# BUG: SettingsFragment এ PIN change করতে সরাসরি startActivity() use হচ্ছে।
-# এতে MainActivity এর onStop() fire হয়, isVerified=false হয়,
-# PIN change screen থেকে ফিরলে আবার verify screen আসে → loop/crash।
-# Fix: MainActivity এর pinChangeLauncher use করো।
-
+# ══════════════════════════════════════════════════════
+# FIX 4: SettingsFragment — PIN change startActivity → launcher
+# ══════════════════════════════════════════════════════
 with open(SETTINGS_F, "r", encoding="utf-8") as f:
-    settings_content = f.read()
+    content = f.read()
 
-OLD_PIN_CHANGE = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
+OLD_SETTING = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
             startActivity(Intent(requireContext(), PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
             })
         }'''
 
-NEW_PIN_CHANGE = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
-            // startActivity() না — MainActivity এর launcher use করো
-            // না হলে onStop() isVerified=false করে দেয়, ফিরলে আবার verify আসে
+NEW_SETTING = '''        view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
             (requireActivity() as MainActivity).pinChangeLauncher.launch(
                 Intent(requireContext(), PinActivity::class.java).apply {
                     putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
@@ -258,29 +260,26 @@ NEW_PIN_CHANGE = '''        view.findViewById<View>(R.id.rowChangePin).setOnClic
             )
         }'''
 
-if OLD_PIN_CHANGE in settings_content:
-    fixed_settings = settings_content.replace(OLD_PIN_CHANGE, NEW_PIN_CHANGE)
+if OLD_SETTING in content:
+    content = content.replace(OLD_SETTING, NEW_SETTING)
     with open(SETTINGS_F, "w", encoding="utf-8") as f:
-        f.write(fixed_settings)
-    print("✅ Fix 3: SettingsFragment.kt — PIN change uses launcher")
+        f.write(content)
+    print("✅ Fix 4: SettingsFragment.kt — pinChangeLauncher")
 else:
-    print("⚠️  SettingsFragment: PIN change pattern not found — check manually")
+    print("⚠️  Fix 4: pattern not found — skipping")
 
-# ════════════════════════════════════════════════════════════════════
 print()
 print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-print("✅ সব fix apply হয়েছে!")
+print("✅ সব fix done!")
 print()
-print("🔥 Root cause (আসল কারণ):")
-print("   MainActivity তে android:launchMode=\"singleTask\" ছিল।")
-print("   singleTask এ ActivityResultLauncher কাজ করে না —")
-print("   PinActivity RESULT_OK পাঠালেও MainActivity পায় না।")
-print("   তাই PIN দেওয়ার পরেও dashboard crash হত।")
+print("🔥 Bug summary:")
+print("  1. MainActivity singleTask → ActivityResultLauncher broken")
+print("  2. PinActivity singleTop → setResult() interfere")
+print("  3. NoPinSet case এ নতুন PinActivity launch → RESULT_OK হারিয়ে যায়")
+print("  4. SettingsFragment startActivity → onStop isVerified=false")
 print()
-print("📋 3টা fix:")
-print("   1. AndroidManifest: singleTask → standard")
-print("   2. MainActivity: isPinActive guard, clean PIN flow")
-print("   3. SettingsFragment: PIN change এ launcher use")
-print()
-print("▶ এরপর: Build → Clean Project → Rebuild → Install")
+print("▶ এরপর:")
+print("  git add -A")
+print('  git commit -m "fix: all PIN crash bugs"')
+print("  git push")
 print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")

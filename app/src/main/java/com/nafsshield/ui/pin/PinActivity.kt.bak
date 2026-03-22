@@ -133,13 +133,10 @@ class PinActivity : AppCompatActivity() {
             is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, result.attemptsLeft))
             is PinResult.LockedOut -> startLockoutTimer(result.secondsRemaining)
             is PinResult.NoPinSet  -> {
-                // নতুন Activity launch না করে এখানেই setup mode এ switch করো
-                // তাহলে RESULT_OK সরাসরি pinLauncher এ যাবে
-                mode = MODE_SETUP
-                setupStep = 1
-                firstPin = ""
-                resetInput()
-                updateHeader()
+                startActivity(Intent(this, PinActivity::class.java).apply {
+                    putExtra(MODE, MODE_SETUP)
+                })
+                finish()
             }
         }
     }

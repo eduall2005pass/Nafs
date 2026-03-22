@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var pinManager: PinManager
     private var wentToBackground = false
-    private var isPinLaunching = false
+    private var isPinActive = false
 
     // VPN permission launcher
     private val vpnLauncher = registerForActivityResult(
@@ -41,40 +41,43 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
-    // PIN screen launcher — result এ app দেখাবে বা বন্ধ করবে
+    // PIN launcher — RESULT_OK হলে app দেখাবে, না হলে বন্ধ
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        isPinLaunching = false
+        isPinActive = false
         if (result.resultCode == RESULT_OK) {
+            PinActivity.isVerified = true
             wentToBackground = false
         } else {
+            // PIN cancel/back — app বন্ধ করো
             finishAffinity()
         }
     }
 
+    // PIN change launcher — শুধু Settings থেকে change PIN এর জন্য
+    // এতে onStop/onStart এর isVerified logic disturb হবে না
+    val pinChangeLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { /* PIN change হলে কিছু করার নেই */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pinManager = PinManager(this)
 
-        // PIN setup হয়নি → setup screen
-        if (!pinManager.isPinSetup) {
-            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_SETUP)
-            })
-            // Setup হওয়ার পরেও app চলবে
-        }
-        // PIN verify হয়নি → verify screen
-        else if (!PinActivity.isVerified) {
-            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
-            })
-        }
-
-        // Layout সবসময় load করো — PIN screen এর পেছনে থাকবে
+        // setContentView সবার আগে — NavHostFragment inflate করতে হবে
         setContentView(R.layout.activity_main)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        pinManager = PinManager(this)
+        viewModel  = ViewModelProvider(this)[MainViewModel::class.java]
         setupNavigation()
+
+        // Fresh launch এ PIN check করো
+        if (savedInstanceState == null) {
+            when {
+                !pinManager.isPinSetup  -> launchPin(PinActivity.MODE_SETUP)
+                !PinActivity.isVerified -> launchPin(PinActivity.MODE_VERIFY)
+            }
+        }
 
         if (!Settings.canDrawOverlays(this)) {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
@@ -86,8 +89,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // PIN screen নিজে launch করলে background count করবো না
-        if (!isChangingConfigurations && !isPinLaunching) {
+        // PIN screen চলাকালীন বা rotation এ background flag সেট করবো না
+        if (!isChangingConfigurations && !isPinActive) {
             wentToBackground = true
             PinActivity.isVerified = false
         }
@@ -98,24 +101,28 @@ class MainActivity : AppCompatActivity() {
         if (isChangingConfigurations) return
         if (!::pinManager.isInitialized) return
         if (!pinManager.isPinSetup) return
+        if (isPinActive) return  // PIN screen ইতিমধ্যে চলছে
 
-        // Task switcher থেকে ফিরলে PIN চাও
         if (wentToBackground && !PinActivity.isVerified) {
-            isPinLaunching = true
-            pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
-                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
-            })
-            wentToBackground = false  // launch সফল হলে reset
+            launchPin(PinActivity.MODE_VERIFY)
+            wentToBackground = false
         }
+    }
+
+    fun launchPin(mode: String) {
+        if (isPinActive) return
+        isPinActive = true
+        pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
+            putExtra(PinActivity.MODE, mode)
+        })
     }
 
     private fun setupNavigation() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        NavigationUI.setupWithNavController(
-            findViewById<BottomNavigationView>(R.id.bottom_nav),
-            navHost.navController
-        )
+        val navController = navHost.navController
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
+        NavigationUI.setupWithNavController(bottomNav, navController)
     }
 
     fun checkAndStartGuard() {
