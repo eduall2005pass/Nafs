@@ -82,8 +82,7 @@ class NafsVpnService : VpnService() {
         Log.i(TAG, "VPN started — DNS: ${pinManager.primaryDns}")
     }
 
-    private suspend fun runPacketLoop() {
-        withContext(Dispatchers.IO) {
+    private suspend fun runPacketLoop() = withContext(Dispatchers.IO) {
         val fd     = vpnInterface?.fileDescriptor ?: return@withContext
         val input  = FileInputStream(fd)
         val output = FileOutputStream(fd)
@@ -97,13 +96,11 @@ class NafsVpnService : VpnService() {
 
                 val packet = buffer.array().copyOf(length)
 
-                // IPv4 only
                 if (length < 20 || ((packet[0].toInt() shr 4) and 0xF) != 4) {
                     output.write(packet); continue
                 }
 
-                val protocol   = packet[9].toInt() and 0xFF
-                // UDP only (DNS is UDP port 53)
+                val protocol = packet[9].toInt() and 0xFF
                 if (protocol != 17) { output.write(packet); continue }
 
                 val ipHeaderLen = (packet[0].toInt() and 0xF) * 4
@@ -132,7 +129,6 @@ class NafsVpnService : VpnService() {
                 if (running.get()) Log.e(TAG, "Packet loop error: ${e.message}")
             }
         }
-    }
     }
 
     private suspend fun runDnsHealthCheck() = withContext(Dispatchers.IO) {
