@@ -3,6 +3,9 @@ package com.nafsshield.ui.pin
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -247,6 +250,8 @@ class PinActivity : AppCompatActivity() {
         tvMessage.text = msg
         tvMessage.setTextColor(ContextCompat.getColor(this, R.color.accent_red))
         tvMessage.visibility = View.VISIBLE
+
+        // Shake animation
         tvMessage.animate().translationX(-12f).setDuration(40)
             .withEndAction {
                 tvMessage.animate().translationX(12f).setDuration(40)
@@ -254,6 +259,22 @@ class PinActivity : AppCompatActivity() {
                         tvMessage.animate().translationX(0f).setDuration(40).start()
                     }.start()
             }.start()
+
+        // Vibrate
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                val vm = getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vm.defaultVibrator.vibrate(
+                    VibrationEffect.createWaveform(longArrayOf(0, 80, 60, 80), -1)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                val v = getSystemService(VIBRATOR_SERVICE) as Vibrator
+                @Suppress("DEPRECATION")
+                v.vibrate(longArrayOf(0, 80, 60, 80), -1)
+            }
+        } catch (_: Exception) {}
+
         resetInput()
     }
 
