@@ -289,6 +289,7 @@ class SettingsFragment : Fragment() {
                 }
             )
         }
+            // না হলে onStop() isVerified=false করে দেয়, ফিরলে আবার verify আসে
             (requireActivity() as MainActivity).pinChangeLauncher.launch(
                 Intent(requireContext(), PinActivity::class.java).apply {
                     putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
