@@ -36,6 +36,12 @@ class NafsAccessibilityService : AccessibilityService() {
             "stop", "বন্ধ", "강제 종료", "force stop",
             "close", "end", "종료", "중지"
         )
+        
+        val BG_ACTIVITY_TITLES = listOf(
+            "check background activity",
+            "background activity",
+            "background app"
+        )
     }
 
     private lateinit var repository: NafsRepository
@@ -178,6 +184,14 @@ class NafsAccessibilityService : AccessibilityService() {
         // 7. System UI "Stop" button detect
         if (SYSTEM_UI_PACKAGES.contains(pkg)) {
             mainHandler.postDelayed({ checkAndBlockStopButton() }, 150)
+        }
+        
+        // 7b. "Check background activity" dialog detect
+        val windowTitle = event.text?.joinToString(" ")?.lowercase() ?: ""
+        val className2 = event.className?.toString() ?: ""
+        if (BG_ACTIVITY_TITLES.any { windowTitle.contains(it) } ||
+            pkg == "com.android.systemui" && windowTitle.contains("background")) {
+            mainHandler.postDelayed({ blockBgActivityStopButton() }, 200)
         }
 
         // 8. Launcher long-press uninstall drag detect
@@ -350,6 +364,23 @@ class NafsAccessibilityService : AccessibilityService() {
         node.contentDescription?.let { sb.append(it).append(" ") }
         for (i in 0 until node.childCount) {
             collectAllText(node.getChild(i), sb)
+        }
+    }
+    
+    private fun blockBgActivityStopButton() {
+        try {
+            val root = rootInActiveWindow ?: return
+            val allText = extractAllTextFromNode(root).lowercase()
+            // NafsShield এর Stop button আছে কিনা দেখো
+            if (!allText.contains("nafsshield")) {
+                root.recycle()
+                return
+            }
+            // Stop button খুঁজে intercept করো
+            interceptStopButton(root)
+            root.recycle()
+        } catch (e: Exception) {
+            Log.e(TAG, "blockBgActivity: ${e.message}")
         }
     }
     
