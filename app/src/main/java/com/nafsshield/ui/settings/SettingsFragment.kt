@@ -289,18 +289,11 @@ class SettingsFragment : Fragment() {
                 }
             )
         }
-            (requireActivity() as MainActivity).pinChangeLauncher.launch(
-                Intent(requireContext(), PinActivity::class.java).apply {
-                    putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
-                }
-            )
-        }
         view.findViewById<View>(R.id.rowDeviceAdmin).setOnClickListener {
             (requireActivity() as MainActivity).activateDeviceAdmin()
         }
         updateAdminStatus()
     }
-
     private fun updateAdminStatus() {
         val dpm    = requireContext().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val admin  = ComponentName(requireContext(), NafsDeviceAdmin::class.java)
