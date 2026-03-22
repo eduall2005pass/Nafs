@@ -12,4 +12,10 @@
     <item android:id="@+id/settingsFragment"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/nav_settings" />
+    <item android:id="@+id/websitesFragment"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="@string/nav_websites" />
+    <item android:id="@+id/reportFragment"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="@string/nav_report" />
 </menu>

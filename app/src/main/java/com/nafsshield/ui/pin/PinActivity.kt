@@ -95,9 +95,37 @@ class PinActivity : AppCompatActivity() {
     private fun onPinComplete() {
         val pin = currentPin.toString()
         when (mode) {
-            MODE_SETUP  -> handleSetup(pin)
-            MODE_VERIFY -> handleVerify(pin)
-            MODE_CHANGE -> handleChange(pin)
+            MODE_SETUP           -> handleSetup(pin)
+            MODE_VERIFY          -> handleVerify(pin)
+            MODE_CHANGE          -> handleChange(pin)
+            MODE_VERIFY_ADMIN    -> handleVerifyAdmin(pin)
+            MODE_SETTINGS_ACCESS -> handleVerifySettings(pin)
+        }
+    }
+
+    private fun handleVerifyAdmin(pin: String) {
+        when (val r = pinManager.verifyPin(pin)) {
+            is PinResult.Correct -> {
+                showSuccess("✅ PIN সঠিক — সরানো হচ্ছে…")
+                window.decorView.postDelayed({
+                    val dpm = getSystemService(DEVICE_POLICY_SERVICE)
+                            as android.app.admin.DevicePolicyManager
+                    dpm.removeActiveAdmin(android.content.ComponentName(this, NafsDeviceAdmin::class.java))
+                    finish()
+                }, 800)
+            }
+            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
+            else -> {}
+        }
+    }
+
+    private fun handleVerifySettings(pin: String) {
+        when (val r = pinManager.verifyPin(pin)) {
+            is PinResult.Correct -> { showSuccess("✅ PIN সঠিক"); window.decorView.postDelayed({ finish() }, 500) }
+            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
+            else -> {}
         }
     }
 
@@ -239,9 +267,11 @@ class PinActivity : AppCompatActivity() {
 
     private fun updateHeader() {
         when (mode) {
-            MODE_SETUP  -> { tvTitle.text = getString(R.string.setup_pin_title); tvSubtitle.text = getString(R.string.setup_pin_subtitle) }
-            MODE_VERIFY -> { tvTitle.text = getString(R.string.verify_pin_title); tvSubtitle.text = getString(R.string.verify_pin_subtitle) }
-            MODE_CHANGE -> { tvTitle.text = "পুরনো PIN দিন"; tvSubtitle.text = "নিশ্চিত করতে আগের PIN দিন" }
+            MODE_SETUP           -> { tvTitle.text = getString(R.string.setup_pin_title); tvSubtitle.text = getString(R.string.setup_pin_subtitle) }
+            MODE_VERIFY          -> { tvTitle.text = getString(R.string.verify_pin_title); tvSubtitle.text = getString(R.string.verify_pin_subtitle) }
+            MODE_CHANGE          -> { tvTitle.text = "পুরনো PIN দিন"; tvSubtitle.text = "নিশ্চিত করতে আগের PIN দিন" }
+            MODE_VERIFY_ADMIN    -> { tvTitle.text = "🔐 Device Admin"; tvSubtitle.text = "নিষ্ক্রিয় করতে PIN দিন" }
+            MODE_SETTINGS_ACCESS -> { tvTitle.text = "🔐 সুরক্ষিত সেটিংস"; tvSubtitle.text = "পরিবর্তন করতে PIN দিন" }
         }
     }
 
@@ -250,9 +280,17 @@ class PinActivity : AppCompatActivity() {
         finish()
     }
 
-    // PIN screen থেকে back press block
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() { /* blocked */ }
+    override fun onBackPressed() {
+        if (mode == MODE_VERIFY_ADMIN || mode == MODE_SETTINGS_ACCESS) {
+            startActivity(android.content.Intent(android.content.Intent.ACTION_MAIN).apply {
+                addCategory(android.content.Intent.CATEGORY_HOME)
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+            finish()
+        }
+        // MODE_VERIFY তে back blocked
+    }
 
     override fun onDestroy() {
         lockoutTimer?.cancel()

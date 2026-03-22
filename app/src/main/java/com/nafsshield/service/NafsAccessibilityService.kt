@@ -21,6 +21,21 @@ class NafsAccessibilityService : AccessibilityService() {
         const val TAG = "NafsAccessibility"
         @Volatile var instance: NafsAccessibilityService? = null
         val isRunning get() = instance != null
+
+        // Samsung/Android system UI packages যেখানে "Stop" button আসে
+        val SYSTEM_UI_PACKAGES = setOf(
+            "com.android.systemui",
+            "com.samsung.android.lool",       // Samsung Device Care
+            "com.samsung.android.sm",
+            "com.samsung.android.sm.policy",
+            "android"
+        )
+
+        // "Stop" বাটনের text variants (বাংলা + English + Korean)
+        val STOP_BUTTON_TEXTS = listOf(
+            "stop", "বন্ধ", "강제 종료", "force stop",
+            "close", "end", "종료", "중지"
+        )
     }
 
     private lateinit var repository: NafsRepository
@@ -46,7 +61,9 @@ class NafsAccessibilityService : AccessibilityService() {
             eventTypes =
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
                 AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED or
-                AccessibilityEvent.TYPE_VIEW_SCROLLED
+                AccessibilityEvent.TYPE_VIEW_SCROLLED or
+                AccessibilityEvent.TYPE_VIEW_LONG_CLICKED or   // Long press detect
+                AccessibilityEvent.TYPE_VIEW_SELECTED           // Drag select detect
             feedbackType    = AccessibilityServiceInfo.FEEDBACK_GENERIC
             flags           = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
                               AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
@@ -66,6 +83,21 @@ class NafsAccessibilityService : AccessibilityService() {
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
             AccessibilityEvent.TYPE_VIEW_SCROLLED ->
                 if (pkg == lastPkg) scheduleKeywordScan(pkg)
+
+            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> {
+                // Long press — launcher এ হলে uninstall drag zone check করো
+                if (Constants.LAUNCHER_PACKAGES.contains(pkg)) {
+                    mainHandler.postDelayed({ checkLauncherUninstallDrag() }, 300)
+                    mainHandler.postDelayed({ checkLauncherUninstallDrag() }, 800)
+                }
+            }
+
+            AccessibilityEvent.TYPE_VIEW_SELECTED -> {
+                // Drag selection — launcher এ NafsShield drag হচ্ছে কিনা
+                if (Constants.LAUNCHER_PACKAGES.contains(pkg)) {
+                    mainHandler.postDelayed({ checkLauncherUninstallDrag() }, 200)
+                }
+            }
         }
     }
 
@@ -105,10 +137,29 @@ class NafsAccessibilityService : AccessibilityService() {
             return
         }
 
-        // 5. Uninstall screen - check both class name and activity patterns
+        // 5. Uninstall screen — class name + package name দুটোই check করো
         val cls = event.className?.toString() ?: ""
-        if (Constants.UNINSTALL_ACTIVITIES.any { cls.contains(it) }) {
-            handleUninstallScreen()
+        val isUninstallActivity = Constants.UNINSTALL_ACTIVITIES.any {
+            cls.contains(it, ignoreCase = true)
+        }
+        val isPackageInstaller = pkg.contains("packageinstaller", ignoreCase = true) ||
+                                 pkg == "com.android.packageinstaller" ||
+                                 pkg == "com.google.android.packageinstaller"
+        if (isUninstallActivity || isPackageInstaller) {
+            // NafsShield কে uninstall করার চেষ্টা হচ্ছে কিনা check করো
+            mainHandler.postDelayed({
+                val root2 = rootInActiveWindow
+                if (root2 != null) {
+                    val txt = extractAllTextFromNode(root2).lowercase()
+                    if (txt.contains("nafsshield") || txt.contains("com.nafsshield")) {
+                        handleUninstallScreen()
+                    }
+                    root2.recycle()
+                } else {
+                    // Root পাওয়া না গেলেও block করো (safety)
+                    if (isUninstallActivity) handleUninstallScreen()
+                }
+            }, 150)
             return
         }
         
@@ -124,8 +175,18 @@ class NafsAccessibilityService : AccessibilityService() {
             return
         }
 
-        // 7. Keyword scan (debounced)
-        scheduleKeywordScan(pkg)
+        // 7. System UI "Stop" button detect
+        if (SYSTEM_UI_PACKAGES.contains(pkg)) {
+            mainHandler.postDelayed({ checkAndBlockStopButton() }, 150)
+        }
+
+        // 8. Launcher long-press uninstall drag detect
+        if (Constants.LAUNCHER_PACKAGES.contains(pkg)) {
+            mainHandler.postDelayed({ checkLauncherUninstallDrag() }, 200)
+        }
+
+        // 9. Keyword scan — NafsShield নিজের screen এ scan করবে না
+        if (pkg != packageName) scheduleKeywordScan(pkg)
     }
     
     private fun startContinuousSettingsMonitoring() {
@@ -198,19 +259,14 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun handleDeviceAdminScreen() {
-        // Device Admin deactivate screen খুললেই block করো
-        Log.d(TAG, "⛔ Device Admin deactivate screen detected — blocking!")
-        // Immediately go back multiple times
-        repeat(5) { performGlobalAction(GLOBAL_ACTION_BACK) }
-        mainHandler.postDelayed({
-            performGlobalAction(GLOBAL_ACTION_HOME)
-            overlayManager.showPersistentBlockOverlay(
-                "⛔ NafsShield সরানো যাবে না!\n\n" +
-                "Device Admin নিষ্ক্রিয় করতে PIN প্রয়োজন।\n\n" +
-                "অ্যাপটি সুরক্ষিত আছে।",
-                6000
-            )
-        }, 50)
+        Log.d(TAG, "🔒 Device Admin screen — launching PIN")
+        startActivity(android.content.Intent(this,
+            com.nafsshield.ui.pin.PinActivity::class.java).apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                     android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra(com.nafsshield.ui.pin.PinActivity.MODE,
+                     com.nafsshield.ui.pin.PinActivity.MODE_VERIFY_ADMIN)
+        })
     }
 
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
@@ -298,18 +354,14 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun blockSettingsImmediately() {
-        // Multiple back presses to ensure exit
-        repeat(5) {
-            performGlobalAction(GLOBAL_ACTION_BACK)
-        }
-        mainHandler.postDelayed({
-            performGlobalAction(GLOBAL_ACTION_HOME)
-            overlayManager.showPersistentBlockOverlay(
-                "⛔ NafsShield সেটিংস পরিবর্তন করা যাবে না!\n\n" +
-                "সুরক্ষা ব্যবস্থা সক্রিয় আছে।",
-                5000
-            )
-        }, 100)
+        Log.d(TAG, "🔒 Protected settings — launching PIN")
+        startActivity(android.content.Intent(this,
+            com.nafsshield.ui.pin.PinActivity::class.java).apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                     android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra(com.nafsshield.ui.pin.PinActivity.MODE,
+                     com.nafsshield.ui.pin.PinActivity.MODE_SETTINGS_ACCESS)
+        })
     }
 
     private fun handleUninstallScreen() {
@@ -372,6 +424,131 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
         return false
+    }
+
+    private fun checkLauncherUninstallDrag() {
+        try {
+            val root = rootInActiveWindow ?: return
+            val allText = extractAllTextFromNode(root).lowercase()
+
+            // Launcher এ "uninstall"/"আনইনস্টল" text দেখা দিলে
+            // AND "nafsshield" ও text এ থাকলে — block করো
+            val hasUninstall = Constants.UNINSTALL_DRAG_TEXTS.any { allText.contains(it) }
+            val hasNafs = allText.contains("nafsshield") ||
+                          allText.contains("com.nafsshield") ||
+                          allText.contains("naf") // short form
+
+            if (hasUninstall) {
+                // Uninstall zone visible হলেই সতর্ক থাকো
+                // NafsShield drag করা হচ্ছে কিনা check করো
+                checkIfNafsShieldDragging(root)
+            }
+            root.recycle()
+        } catch (e: Exception) {
+            Log.e(TAG, "checkLauncherDrag error: ${e.message}")
+        }
+    }
+
+    private fun checkIfNafsShieldDragging(root: AccessibilityNodeInfo) {
+        try {
+            // Drag করা item এর text/description এ NafsShield আছে কিনা দেখো
+            val dragging = findDraggedItem(root)
+            if (dragging != null) {
+                val text = (dragging.text?.toString() ?: "") +
+                           (dragging.contentDescription?.toString() ?: "")
+                if (text.lowercase().contains("nafs") ||
+                    text.lowercase().contains("shield")) {
+                    Log.d(TAG, "⚠️ NafsShield drag-to-uninstall detected!")
+                    // সাথে সাথে home এ ফিরে যাও
+                    performGlobalAction(GLOBAL_ACTION_HOME)
+                    mainHandler.postDelayed({
+                        overlayManager.showPersistentBlockOverlay(
+                            "⛔ NafsShield আনইনস্টল করা যাবে না!
+
+Device Admin সক্রিয় আছে।",
+                            3000
+                        )
+                    }, 200)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "checkDragging: ${e.message}")
+        }
+    }
+
+    private fun findDraggedItem(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
+        if (node == null) return null
+        // Dragged items সাধারণত selected/focused state এ থাকে
+        if (node.isSelected || node.isFocused) {
+            val t = node.text?.toString()?.lowercase() ?: ""
+            val d = node.contentDescription?.toString()?.lowercase() ?: ""
+            if (t.contains("nafs") || d.contains("nafs") ||
+                t.contains("shield") || d.contains("shield")) {
+                return node
+            }
+        }
+        for (i in 0 until node.childCount) {
+            val found = findDraggedItem(node.getChild(i))
+            if (found != null) return found
+        }
+        return null
+    }
+
+    private fun checkAndBlockStopButton() {
+        try {
+            val root = rootInActiveWindow ?: return
+            val allText = extractAllTextFromNode(root).lowercase()
+
+            // "NafsShield" + "Stop"/"বন্ধ" একসাথে আছে কিনা দেখো
+            val hasNafs = allText.contains("nafsshield") ||
+                          allText.contains("com.nafsshield")
+            val hasStop = STOP_BUTTON_TEXTS.any { allText.contains(it) }
+
+            if (hasNafs && hasStop) {
+                Log.d(TAG, "⚠️ Stop button detected for NafsShield!")
+                // Stop button disable করো
+                interceptStopButton(root)
+                root.recycle()
+                return
+            }
+            root.recycle()
+        } catch (e: Exception) {
+            Log.e(TAG, "checkStopButton error: ${e.message}")
+        }
+    }
+
+    private fun interceptStopButton(root: AccessibilityNodeInfo) {
+        // সব clickable node খোঁজো যেগুলোর text "stop"/"বন্ধ"
+        findStopNodes(root) { node ->
+            // Stop button এ click করার আগে home এ যাও
+            Log.d(TAG, "🔒 Intercepting Stop button")
+            performGlobalAction(GLOBAL_ACTION_HOME)
+            mainHandler.postDelayed({
+                overlayManager.showPersistentBlockOverlay(
+                    "⛔ NafsShield বন্ধ করা যাবে না!
+
+App সুরক্ষিত আছে।",
+                    4000
+                )
+            }, 100)
+        }
+    }
+
+    private fun findStopNodes(
+        node: AccessibilityNodeInfo?,
+        onFound: (AccessibilityNodeInfo) -> Unit
+    ) {
+        if (node == null) return
+        val text = node.text?.toString()?.lowercase() ?: ""
+        val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+        if ((node.isClickable || node.isEnabled) &&
+            STOP_BUTTON_TEXTS.any { text.contains(it) || desc.contains(it) }) {
+            onFound(node)
+            return
+        }
+        for (i in 0 until node.childCount) {
+            findStopNodes(node.getChild(i), onFound)
+        }
     }
 
     private fun scheduleKeywordScan(pkg: String) {

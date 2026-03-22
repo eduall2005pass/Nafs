@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="📊 রিপোর্ট" android:textSize="22sp" android:textStyle="bold"
+            android:textColor="@color/text_primary" android:layout_marginBottom="16dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="12dp">
+            <LinearLayout android:id="@+id/cardToday" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center"
+                android:background="@drawable/card_background" android:padding="14dp"
+                android:layout_marginEnd="6dp">
+                <TextView android:id="@+id/tvTodayNum" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textSize="28sp" android:textStyle="bold" android:textColor="@color/accent_blue"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="আজকে" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cardWeek" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center"
+                android:background="@drawable/card_background" android:padding="14dp"
+                android:layout_marginEnd="6dp">
+                <TextView android:id="@+id/tvWeekNum" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textSize="28sp" android:textStyle="bold" android:textColor="@color/accent_green"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="এই সপ্তাহ" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cardTotal" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1"
+                android:orientation="vertical" android:gravity="center"
+                android:background="@drawable/card_background" android:padding="14dp">
+                <TextView android:id="@+id/tvTotalNum" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textSize="28sp" android:textStyle="bold" android:textColor="@color/accent_yellow"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="মোট" android:textSize="11sp" android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="@drawable/card_background"
+            android:padding="16dp" android:layout_marginBottom="12dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="📅 গত ৭ দিন" android:textSize="13sp" android:textStyle="bold"
+                android:textColor="@color/text_primary" android:layout_marginBottom="12dp"/>
+            <LinearLayout android:id="@+id/barChartContainer" android:layout_width="match_parent"
+                android:layout_height="100dp" android:orientation="horizontal"
+                android:gravity="bottom" android:weightSum="7"/>
+            <LinearLayout android:id="@+id/barLabelContainer" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal"
+                android:layout_marginTop="4dp" android:weightSum="7"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="@drawable/card_background"
+            android:padding="16dp" android:layout_marginBottom="12dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🔍 ব্লকের কারণ" android:textSize="13sp" android:textStyle="bold"
+                android:textColor="@color/text_primary" android:layout_marginBottom="10dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="6dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="📱 App ব্লক"
+                    android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvReasonApp" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textColor="@color/accent_blue" android:textStyle="bold" android:textSize="13sp"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="6dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="🌐 Browser ব্লক"
+                    android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvReasonBrowser" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textColor="@color/accent_green" android:textStyle="bold" android:textSize="13sp"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="6dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="🔑 Keyword"
+                    android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvReasonKeyword" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textColor="@color/accent_yellow" android:textStyle="bold" android:textSize="13sp"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="🚫 DNS ব্লক"
+                    android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                <TextView android:id="@+id/tvReasonDns" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="0"
+                    android:textColor="@color/accent_red" android:textStyle="bold" android:textSize="13sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:background="@drawable/card_background"
+            android:padding="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="10dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="📋 সাম্প্রতিক লগ"
+                    android:textSize="13sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+                <TextView android:id="@+id/tvClearLogs" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="মুছুন"
+                    android:textSize="12sp" android:textColor="@color/accent_red" android:padding="4dp"/>
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerLogs"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+            <TextView android:id="@+id/tvNoLogs" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="কোনো লগ নেই"
+                android:gravity="center" android:textColor="@color/text_muted"
+                android:textSize="13sp" android:padding="20dp" android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

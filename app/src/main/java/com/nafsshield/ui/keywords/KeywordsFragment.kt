@@ -52,9 +52,9 @@ class KeywordsFragment : Fragment() {
             adapter = this@KeywordsFragment.adapter
         }
 
-        view.findViewById<MaterialButton>(R.id.btnAddKeyword).setOnClickListener { addKeyword() }
+        view.findViewById<MaterialButton>(R.id.btnAddKeyword).setOnClickListener { verifyPinThenAdd() }
         etKeyword.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) { addKeyword(); true } else false
+            if (actionId == EditorInfo.IME_ACTION_DONE) { verifyPinThenAdd(); true } else false
         }
 
         viewModel.keywords.observe(viewLifecycleOwner) { kws ->
@@ -128,14 +128,34 @@ class KeywordsFragment : Fragment() {
         etPin.requestFocus()
     }
 
-    private fun addKeyword() {
+    private fun verifyPinThenAdd() {
         val word = etKeyword.text?.toString()?.trim() ?: ""
         if (word.isEmpty()) {
             Snackbar.make(requireView(), getString(R.string.keyword_empty_error), Snackbar.LENGTH_SHORT).show()
             return
         }
-        viewModel.addKeyword(word)
-        etKeyword.text?.clear()
-        Snackbar.make(requireView(), "\"$word\" যোগ হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
+        val dv = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
+        val et = dv.findViewById<TextInputEditText>(R.id.etPinVerify)
+        val dlg = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("🔒 PIN নিশ্চিত করুন")
+            .setMessage("\"$word\" keyword যোগ করতে PIN দিন")
+            .setView(dv).setPositiveButton("যোগ করুন", null)
+            .setNegativeButton("বাতিল", null).create()
+        dlg.show(); et.requestFocus()
+        dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {
+                is PinResult.Correct -> {
+                    viewModel.addKeyword(word); etKeyword.text?.clear()
+                    dlg.dismiss()
+                    Snackbar.make(requireView(), "\"$word\" যোগ হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
+                }
+                is PinResult.Wrong -> { et.text?.clear(); et.error = "❌ ভুল PIN! বাকি: ${r.attemptsLeft}" }
+                is PinResult.LockedOut -> {
+                    dlg.dismiss()
+                    Snackbar.make(requireView(), "🔒 ${r.secondsRemaining/60} মিনিট লক", Snackbar.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
+        }
     }
 }

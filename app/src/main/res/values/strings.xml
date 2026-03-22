@@ -8,6 +8,8 @@
     <string name="nav_apps">Apps</string>
     <string name="nav_keywords">Keywords</string>
     <string name="nav_settings">Settings</string>
+    <string name="nav_report">Report</string>
+    <string name="nav_websites">Sites</string>
 
     <string name="setup_pin_title">PIN সেট করুন</string>
     <string name="setup_pin_subtitle">NafsShield সুরক্ষিত রাখতে ৪ সংখ্যার PIN বেছে নিন</string>
@@ -27,7 +29,7 @@
     <string name="add_keyword">যোগ করুন</string>
     
     <!-- Developer Info -->
-    <string name="developer_name">siam.jpg</string>
+    <string name="developer_name">MD Siam Hasan</string>
     <string name="developer_id">Siam-293</string>
     <string name="developer_code">Sh-20</string>
     <string name="developed_by">Developed by</string>

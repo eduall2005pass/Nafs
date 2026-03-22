@@ -40,6 +40,22 @@ class MainActivity : AppCompatActivity() {
         // Admin status will update in onResume of SettingsFragment
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) PinActivity.isVerified = false
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (::pinManager.isInitialized && pinManager.isPinSetup && !PinActivity.isVerified) {
+            startActivity(Intent(this, PinActivity::class.java).apply {
+                putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            })
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pinManager = PinManager(this)

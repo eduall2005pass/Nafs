@@ -1,5 +1,6 @@
 package com.nafsshield.receiver
 import android.content.BroadcastReceiver
+import android.util.Log
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
@@ -9,8 +10,12 @@ import com.nafsshield.util.Constants
 import com.nafsshield.util.PinManager
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action !in listOf(Intent.ACTION_BOOT_COMPLETED,
-            "android.intent.action.QUICKBOOT_POWERON", Constants.SAMSUNG_BOOT_ACTION)) return
+        val valid = listOf(Intent.ACTION_BOOT_COMPLETED,
+            "android.intent.action.QUICKBOOT_POWERON",
+            Constants.SAMSUNG_BOOT_ACTION,
+            "com.nafsshield.RESTART_SERVICE")
+        if (intent.action !in valid) return
+        if (MasterService.isRunning) return
         val pm = PinManager(context)
         if (!pm.isMasterEnabled) return
         ContextCompat.startForegroundService(context,

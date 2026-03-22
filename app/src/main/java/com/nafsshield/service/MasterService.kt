@@ -3,6 +3,7 @@ package com.nafsshield.service
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.os.SystemClock
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -98,14 +99,36 @@ class MasterService : LifecycleService() {
     override fun onDestroy() {
         isRunning = false
         stopVpnService()
+        scheduleRestart(100)
+        scheduleRestart(3000)
         super.onDestroy()
-        Log.i(TAG, "MasterService destroyed")
+        Log.i(TAG, "MasterService destroyed — restart scheduled")
     }
 
-    // Samsung A35 / OneUI: task killed হলেও restart হওয়ার জন্য
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        Log.w(TAG, "Task removed — service will restart via START_STICKY")
+        Log.w(TAG, "Task removed — scheduling restart")
+        scheduleRestart(100)
+        scheduleRestart(2000)
+        scheduleRestart(5000)
+    }
+
+    private fun scheduleRestart(delayMs: Long = 100L) {
+        if (!pinManager.isMasterEnabled) return
+        try {
+            val reqCode = (9000 + delayMs / 100).toInt()
+            val pi = android.app.PendingIntent.getBroadcast(
+                this, reqCode,
+                android.content.Intent(this, com.nafsshield.receiver.BootReceiver::class.java)
+                    .apply { action = "com.nafsshield.RESTART_SERVICE" },
+                android.app.PendingIntent.FLAG_IMMUTABLE or
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT)
+            (getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager)
+                .setExactAndAllowWhileIdle(
+                    android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + delayMs, pi)
+            Log.d(TAG, "Restart scheduled in ${delayMs}ms")
+        } catch (e: Exception) { Log.e(TAG, "scheduleRestart: ${e.message}") }
     }
 
     override fun onBind(intent: Intent): IBinder? {

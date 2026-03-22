@@ -47,6 +47,8 @@ class PinManager(context: Context) {
             .putString(Constants.KEY_PIN_SALT, salt)
             .putBoolean(Constants.KEY_PIN_SETUP_DONE, true)
             .putInt(Constants.KEY_FAILED_ATTEMPTS, 0)
+            .putInt(Constants.KEY_LOCKOUT_COUNT, 0)
+            .putLong(Constants.KEY_LOCKOUT_UNTIL, 0L)
             .apply()
     }
 
@@ -70,12 +72,15 @@ class PinManager(context: Context) {
             val attempts = prefs.getInt(Constants.KEY_FAILED_ATTEMPTS, 0) + 1
             prefs.edit().putInt(Constants.KEY_FAILED_ATTEMPTS, attempts).apply()
             if (attempts >= Constants.MAX_FAILED_ATTEMPTS) {
-                val lockUntil = System.currentTimeMillis() + Constants.LOCKOUT_DURATION_MS
+                val lockCount = prefs.getInt(Constants.KEY_LOCKOUT_COUNT, 0)
+                val lockDur   = Constants.LOCKOUT_DURATION_MS +
+                                (Constants.LOCKOUT_INCREMENT_MS * lockCount)
                 prefs.edit()
-                    .putLong(Constants.KEY_LOCKOUT_UNTIL, lockUntil)
+                    .putLong(Constants.KEY_LOCKOUT_UNTIL, System.currentTimeMillis() + lockDur)
                     .putInt(Constants.KEY_FAILED_ATTEMPTS, 0)
+                    .putInt(Constants.KEY_LOCKOUT_COUNT, lockCount + 1)
                     .apply()
-                PinResult.LockedOut(Constants.LOCKOUT_DURATION_MS / 1000)
+                PinResult.LockedOut(lockDur / 1000)
             } else {
                 PinResult.Wrong(Constants.MAX_FAILED_ATTEMPTS - attempts)
             }
@@ -114,6 +119,29 @@ class PinManager(context: Context) {
     var secondaryDns: String
         get() = prefs.getString(Constants.KEY_DNS_SECONDARY, Constants.DEFAULT_DNS_SECONDARY)!!
         set(v) { prefs.edit().putString(Constants.KEY_DNS_SECONDARY, v).apply() }
+
+    // Blocked websites — comma separated domains
+    fun getBlockedWebsites(): Set<String> {
+        val raw = prefs.getString(Constants.KEY_BLOCKED_WEBSITES, "") ?: ""
+        return if (raw.isBlank()) emptySet()
+        else raw.split(",").map { it.trim().lowercase() }.filter { it.isNotBlank() }.toSet()
+    }
+
+    fun addBlockedWebsite(domain: String) {
+        val current = getBlockedWebsites().toMutableSet()
+        current.add(domain.trim().lowercase()
+            .removePrefix("https://").removePrefix("http://")
+            .removePrefix("www.").substringBefore("/"))
+        prefs.edit().putString(Constants.KEY_BLOCKED_WEBSITES,
+            current.joinToString(",")).apply()
+    }
+
+    fun removeBlockedWebsite(domain: String) {
+        val current = getBlockedWebsites().toMutableSet()
+        current.remove(domain.trim().lowercase())
+        prefs.edit().putString(Constants.KEY_BLOCKED_WEBSITES,
+            current.joinToString(",")).apply()
+    }
 }
 
 sealed class PinResult {

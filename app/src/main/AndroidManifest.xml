@@ -27,6 +27,10 @@
     <!-- Recent tasks থেকে remove করতে -->
     <uses-permission android:name="android.permission.REORDER_TASKS" />
 
+    <!-- AlarmManager exact alarm — bg restart এর জন্য (Android 12+) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
     <!-- Samsung A35: background activity launch (OneUI 6) -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
@@ -114,6 +118,19 @@
             </intent-filter>
         </receiver>
 
+        <!-- ── Share Activity — অন্য app থেকে keyword/URL add ── -->
+        <activity
+            android:name=".ui.share.ShareActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NafsShield"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
         <!-- ── Boot Receiver ── -->
         <receiver
             android:name=".receiver.BootReceiver"
@@ -123,6 +140,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.sec.android.app.launcher.QUICKBOOT_POWERON" />
+                <action android:name="com.nafsshield.RESTART_SERVICE" />
             </intent-filter>
         </receiver>
 

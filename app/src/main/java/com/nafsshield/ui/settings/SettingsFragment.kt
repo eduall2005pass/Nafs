@@ -211,32 +211,61 @@ class SettingsFragment : Fragment() {
 
     private fun setupUninstall(view: View) {
         view.findViewById<View>(R.id.rowUninstall).setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
-            val etPin = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPinVerify)
+            showUninstallDialog()
+        }
+    }
 
-            android.app.AlertDialog.Builder(requireContext())
-                .setTitle("🔓 Uninstall করবেন?")
-                .setMessage("NafsShield uninstall করতে PIN দিন")
-                .setView(dialogView)
-                .setPositiveButton("Uninstall") { _, _ ->
-                    val pin = etPin.text?.toString() ?: ""
-                    if (pinManager.verifyPin(pin) == com.nafsshield.util.PinResult.Correct) {
-                        // Device Admin deactivate করো তারপর uninstall
-                        val dpm = requireContext().getSystemService(android.content.Context.DEVICE_POLICY_SERVICE)
-                                as android.app.admin.DevicePolicyManager
-                        val admin = android.content.ComponentName(requireContext(), com.nafsshield.admin.NafsDeviceAdmin::class.java)
-                        if (dpm.isAdminActive(admin)) dpm.removeActiveAdmin(admin)
+    private fun goHome() {
+        requireActivity().startActivity(
+            android.content.Intent(android.content.Intent.ACTION_MAIN).apply {
+                addCategory(android.content.Intent.CATEGORY_HOME)
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+    }
 
-                        // Uninstall intent
+    private fun showUninstallDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
+        val etPin = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPinVerify)
+
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setTitle("🔓 Uninstall করবেন?")
+            .setMessage("NafsShield uninstall করতে PIN দিন")
+            .setView(dialogView)
+            .setPositiveButton("Uninstall", null)
+            .setNegativeButton("বাতিল") { d, _ -> d.dismiss() }
+            .create()
+
+        dialog.show()
+        etPin.requestFocus()
+
+        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val pin = etPin.text?.toString() ?: ""
+            when (val r = pinManager.verifyPin(pin)) {
+                is com.nafsshield.util.PinResult.Correct -> {
+                    dialog.dismiss()
+                    com.nafsshield.util.UninstallGuard.grant()
+                    val dpm = requireContext()
+                        .getSystemService(android.content.Context.DEVICE_POLICY_SERVICE)
+                        as android.app.admin.DevicePolicyManager
+                    val admin = android.content.ComponentName(
+                        requireContext(), com.nafsshield.admin.NafsDeviceAdmin::class.java)
+                    if (dpm.isAdminActive(admin)) dpm.removeActiveAdmin(admin)
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         val uri = android.net.Uri.parse("package:${requireContext().packageName}")
-                        startActivity(android.content.Intent(android.content.Intent.ACTION_UNINSTALL_PACKAGE, uri))
-                    } else {
-                        com.google.android.material.snackbar.Snackbar.make(requireView(), "❌ ভুল PIN!", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show()
-                    }
+                        startActivity(android.content.Intent(
+                            android.content.Intent.ACTION_UNINSTALL_PACKAGE, uri))
+                    }, 600)
                 }
-                .setNegativeButton("বাতিল", null)
-                .show()
-            etPin.requestFocus()
+                is com.nafsshield.util.PinResult.Wrong -> {
+                    dialog.dismiss()
+                    goHome()
+                }
+                is com.nafsshield.util.PinResult.LockedOut -> {
+                    dialog.dismiss()
+                    goHome()
+                }
+                else -> {}
+            }
         }
     }
 

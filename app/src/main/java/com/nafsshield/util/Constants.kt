@@ -22,8 +22,11 @@ object Constants {
     const val KEY_LOCKOUT_UNTIL   = "lockout_until"
 
     // PIN Security
-    const val MAX_FAILED_ATTEMPTS  = 5
-    const val LOCKOUT_DURATION_MS  = 30_000L
+    const val MAX_FAILED_ATTEMPTS   = 3
+    const val LOCKOUT_DURATION_MS   = 15 * 60 * 1000L  // 15 মিনিট
+    const val LOCKOUT_INCREMENT_MS  = 5  * 60 * 1000L  // +5 মিনিট প্রতি lockout
+    const val KEY_LOCKOUT_COUNT     = "lockout_count"
+    const val KEY_BLOCKED_WEBSITES  = "blocked_websites" 
 
     // VPN / DNS
     const val VPN_ADDRESS          = "10.0.0.2"
@@ -102,6 +105,31 @@ object Constants {
         "android.webkit.WebView",
         "com.amazon.webview.chromium.WebView",
         "org.chromium.android_webview.AwContents"
+    )
+
+    // Launcher/Home screen packages
+    val LAUNCHER_PACKAGES = setOf(
+        "com.sec.android.app.launcher",       // Samsung One UI
+        "com.samsung.android.app.homescreen",
+        "com.android.launcher",
+        "com.android.launcher2",
+        "com.android.launcher3",
+        "com.google.android.apps.nexuslauncher",
+        "com.microsoft.launcher",
+        "com.teslacoilsw.launcher",           // Nova Launcher
+        "com.actionlauncher.playstore",
+        "com.lge.launcher3",
+        "com.huawei.android.launcher",
+        "com.miui.home",
+        "com.oppo.launcher",
+        "com.vivo.launcher",
+        "com.oneplus.launcher"
+    )
+
+    // Long press uninstall drag zone text variants
+    val UNINSTALL_DRAG_TEXTS = listOf(
+        "uninstall", "আনইনস্টল", "remove", "সরান",
+        "delete", "মুছুন", "제거", "삭제"
     )
 
     // Uninstall activity class names
