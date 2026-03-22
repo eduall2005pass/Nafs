@@ -283,8 +283,6 @@ class SettingsFragment : Fragment() {
 
     private fun setupSecurity(view: View) {
         view.findViewById<View>(R.id.rowChangePin).setOnClickListener {
-            // startActivity() না — launcher use করো
-            // না হলে onStop() isVerified=false করে, ফিরলে আবার verify আসে
             (requireActivity() as MainActivity).pinChangeLauncher.launch(
                 Intent(requireContext(), PinActivity::class.java).apply {
                     putExtra(PinActivity.MODE, PinActivity.MODE_CHANGE)
