@@ -407,6 +407,8 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleUninstallScreen() {
+        // Grace period এ আছি — PIN দিয়ে uninstall হচ্ছে
+        if (isInGracePeriod()) return
         // ✅ App এর ভেতর থেকে PIN দিয়ে uninstall করা হলে — block করো না
         if (com.nafsshield.util.UninstallGuard.isAllowed()) {
             Log.d(TAG, "✅ User-initiated uninstall — allowing")
