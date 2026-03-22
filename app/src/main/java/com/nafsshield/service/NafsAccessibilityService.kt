@@ -471,6 +471,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkLauncherUninstallDrag() {
+        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
@@ -494,6 +495,7 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkIfNafsShieldDragging(root: AccessibilityNodeInfo) {
+        if (isInGracePeriod()) return
         try {
             // Drag করা item এর text/description এ NafsShield আছে কিনা দেখো
             val dragging = findDraggedItem(root)
