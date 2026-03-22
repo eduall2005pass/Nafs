@@ -46,7 +46,7 @@ class BlinkOverlayView(private val context: Context) {
 
             // Keyword text — matched word red highlight
             val label = TextView(context).apply {
-                text = ""$keyword" detected"
+                text = "[$keyword] detected"
                 setTextColor(Color.WHITE)
                 textSize = 15f
                 setTypeface(typeface, Typeface.BOLD)
