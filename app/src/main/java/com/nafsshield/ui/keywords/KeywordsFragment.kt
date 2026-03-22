@@ -14,7 +14,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.nafsshield.R
 import com.nafsshield.util.PinManager
+import com.nafsshield.util.PinResult
 import com.nafsshield.viewmodel.MainViewModel
+import com.nafsshield.data.model.Keyword
 
 class KeywordsFragment : Fragment() {
 
@@ -72,7 +74,7 @@ class KeywordsFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("মুছুন") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
-                if (pinManager.verifyPin(enteredPin)) {
+                if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.removeKeyword(keyword)
                     Snackbar.make(requireView(), "Keyword মুছে গেছে ✅", Snackbar.LENGTH_SHORT).show()
                 } else {
@@ -103,7 +105,7 @@ class KeywordsFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("বন্ধ করুন") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
-                if (pinManager.verifyPin(enteredPin)) {
+                if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.toggleKeyword(keyword, false)
                     Snackbar.make(requireView(), "Keyword বন্ধ করা হয়েছে", Snackbar.LENGTH_SHORT).show()
                 } else {

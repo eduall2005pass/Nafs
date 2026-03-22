@@ -3,6 +3,7 @@ package com.nafsshield.data.db
 import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.Migration
 import com.nafsshield.data.db.dao.*
 import com.nafsshield.data.model.*
 import kotlinx.coroutines.CoroutineScope

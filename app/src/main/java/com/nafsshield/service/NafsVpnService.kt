@@ -82,7 +82,8 @@ class NafsVpnService : VpnService() {
         Log.i(TAG, "VPN started — DNS: ${pinManager.primaryDns}")
     }
 
-    private suspend fun runPacketLoop() = withContext(Dispatchers.IO) {
+    private suspend fun runPacketLoop() {
+        withContext(Dispatchers.IO) {
         val fd     = vpnInterface?.fileDescriptor ?: return@withContext
         val input  = FileInputStream(fd)
         val output = FileOutputStream(fd)
@@ -131,6 +132,7 @@ class NafsVpnService : VpnService() {
                 if (running.get()) Log.e(TAG, "Packet loop error: ${e.message}")
             }
         }
+    }
     }
 
     private suspend fun runDnsHealthCheck() = withContext(Dispatchers.IO) {

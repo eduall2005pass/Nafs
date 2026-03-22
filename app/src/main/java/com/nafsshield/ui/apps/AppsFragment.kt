@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.nafsshield.R
 import com.nafsshield.data.model.BlockedApp
 import com.nafsshield.util.PinManager
+import com.nafsshield.util.PinResult
 import com.nafsshield.viewmodel.AppInfo
 import com.nafsshield.viewmodel.MainViewModel
 
@@ -61,7 +62,7 @@ class AppsFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Unblock করুন") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
-                if (pinManager.verifyPin(enteredPin)) {
+                if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.unblockApp(app)
                     Snackbar.make(requireView(), "${app.appName} unblock হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
                 } else {
