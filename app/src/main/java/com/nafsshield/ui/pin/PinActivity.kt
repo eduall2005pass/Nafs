@@ -172,17 +172,42 @@ class PinActivity : AppCompatActivity() {
     private fun handleVerifyAdmin(pin: String) {
         when (val r = pinManager.verifyPin(pin)) {
             is PinResult.Correct -> {
-                showSuccess("✅ PIN সঠিক — সরানো হচ্ছে…")
-                window.decorView.postDelayed({
-                    val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-                    dpm.removeActiveAdmin(ComponentName(this, NafsDeviceAdmin::class.java))
-                    finish()
-                }, 800)
+                // 4 সেকেন্ড countdown দেখাও
+                startAdminRemoveCountdown()
             }
-            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.Wrong -> {
+                showError(getString(R.string.pin_wrong, r.attemptsLeft))
+                showBlockedOverlay()
+            }
             is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
             else -> {}
         }
+    }
+
+    private fun startAdminRemoveCountdown() {
+        setKeypadEnabled(false)
+        object : android.os.CountDownTimer(4000, 1000) {
+            override fun onTick(ms: Long) {
+                showSuccess("✅ PIN সঠিক — ${ms / 1000 + 1} সেকেন্ড পর বন্ধ হবে…")
+            }
+            override fun onFinish() {
+                val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                dpm.removeActiveAdmin(ComponentName(this@PinActivity, NafsDeviceAdmin::class.java))
+                finish()
+            }
+        }.start()
+    }
+
+    private fun showBlockedOverlay() {
+        try {
+            val overlay = com.nafsshield.overlay.OverlayManager(this)
+            overlay.showPersistentBlockOverlay(
+                "⛔ ভুল PIN!
+
+অননুমোদিত প্রবেশের চেষ্টা সনাক্ত হয়েছে।",
+                3000
+            )
+        } catch (_: Exception) {}
     }
 
     // ── Settings access ───────────────────────────────────────────────
@@ -192,7 +217,10 @@ class PinActivity : AppCompatActivity() {
                 showSuccess("✅ PIN সঠিক")
                 window.decorView.postDelayed({ finish() }, 500)
             }
-            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, r.attemptsLeft))
+            is PinResult.Wrong -> {
+                showError(getString(R.string.pin_wrong, r.attemptsLeft))
+                showBlockedOverlay()
+            }
             is PinResult.LockedOut -> startLockoutTimer(r.secondsRemaining)
             else -> {}
         }
