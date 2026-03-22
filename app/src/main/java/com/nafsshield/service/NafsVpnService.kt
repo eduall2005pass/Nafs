@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import com.nafsshield.ui.MainActivity
 import com.nafsshield.util.Constants
 import com.nafsshield.util.PinManager
-import com.nafsshield.util.PinManager
 import kotlinx.coroutines.*
 import java.io.FileInputStream
 import java.io.FileOutputStream
