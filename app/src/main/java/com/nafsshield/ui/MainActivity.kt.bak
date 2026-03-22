@@ -29,19 +29,14 @@ class MainActivity : AppCompatActivity() {
     private var wentToBackground = false
     private var isPinActive = false
 
-    // VPN permission launcher
     private val vpnLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) startGuard()
-    }
+    ) { result -> if (result.resultCode == RESULT_OK) startGuard() }
 
-    // Device admin launcher
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
-    // PIN launcher — RESULT_OK হলে app দেখাবে, না হলে বন্ধ
     private val pinLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -50,28 +45,24 @@ class MainActivity : AppCompatActivity() {
             PinActivity.isVerified = true
             wentToBackground = false
         } else {
-            // PIN cancel/back — app বন্ধ করো
             finishAffinity()
         }
     }
 
-    // PIN change launcher — শুধু Settings থেকে change PIN এর জন্য
-    // এতে onStop/onStart এর isVerified logic disturb হবে না
+    // Settings থেকে PIN change এর জন্য আলাদা launcher
+    // এতে isPinActive বা isVerified disturb হয় না
     val pinChangeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { /* PIN change হলে কিছু করার নেই */ }
+    ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // setContentView সবার আগে — NavHostFragment inflate করতে হবে
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
         viewModel  = ViewModelProvider(this)[MainViewModel::class.java]
         setupNavigation()
 
-        // Fresh launch এ PIN check করো
         if (savedInstanceState == null) {
             when {
                 !pinManager.isPinSetup  -> launchPin(PinActivity.MODE_SETUP)
@@ -89,7 +80,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // PIN screen চলাকালীন বা rotation এ background flag সেট করবো না
         if (!isChangingConfigurations && !isPinActive) {
             wentToBackground = true
             PinActivity.isVerified = false
@@ -101,8 +91,7 @@ class MainActivity : AppCompatActivity() {
         if (isChangingConfigurations) return
         if (!::pinManager.isInitialized) return
         if (!pinManager.isPinSetup) return
-        if (isPinActive) return  // PIN screen ইতিমধ্যে চলছে
-
+        if (isPinActive) return
         if (wentToBackground && !PinActivity.isVerified) {
             launchPin(PinActivity.MODE_VERIFY)
             wentToBackground = false
