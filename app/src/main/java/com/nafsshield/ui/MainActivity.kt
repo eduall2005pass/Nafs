@@ -101,11 +101,11 @@ class MainActivity : AppCompatActivity() {
 
         // Task switcher থেকে ফিরলে PIN চাও
         if (wentToBackground && !PinActivity.isVerified) {
-            wentToBackground = false
             isPinLaunching = true
             pinLauncher.launch(Intent(this, PinActivity::class.java).apply {
                 putExtra(PinActivity.MODE, PinActivity.MODE_VERIFY)
             })
+            wentToBackground = false  // launch সফল হলে reset
         }
     }
 
