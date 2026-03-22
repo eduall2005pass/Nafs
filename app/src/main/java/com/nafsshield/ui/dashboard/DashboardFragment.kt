@@ -72,6 +72,13 @@ class DashboardFragment : Fragment() {
 
         setupSwitches()
         observeData()
+
+        view.findViewById<android.view.View>(R.id.cardReport).setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, com.nafsshield.ui.report.ReportFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun setupSwitches() {
