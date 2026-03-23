@@ -24,7 +24,7 @@
 
     <!-- Lock shackle -->
     <path
-        android:fillColor="none"
+        android:fillColor="@android:color/transparent"
         android:strokeColor="#F59E0B"
         android:strokeWidth="3.5"
         android:strokeLineCap="round"
@@ -34,24 +34,6 @@
     <path
         android:fillColor="#059669"
         android:pathData="M54,53 m-3,0 a3,3 0,1 1,6 0 a3,3 0,1 1,-6 0 M53,56 L53,61 L55,61 L55,56 Z"/>
-
-    <!-- Arabic نفس -->
-    <text
-        android:fontFamily="serif"
-        android:textSize="12"
-        android:fillColor="#F9FAFB"
-        android:x="54"
-        android:y="78"
-        android:textAlignment="center">نفس</text>
-
-    <!-- NAFS English -->
-    <text
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="7"
-        android:fillColor="#F59E0B"
-        android:x="54"
-        android:y="86"
-        android:textAlignment="center">NAFS</text>
 
     <!-- Crescent top-right -->
     <path
@@ -65,4 +47,5 @@
     <path
         android:fillColor="#F59E0B"
         android:pathData="M36,22 L37.5,26.5 L42,26.5 L38.5,29 L40,33.5 L36,31 L32,33.5 L33.5,29 L30,26.5 L34.5,26.5 Z"/>
+
 </vector>
