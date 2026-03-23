@@ -1,15 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="horizontal" android:padding="12dp"
-    android:gravity="center_vertical"
-    android:background="@drawable/card_background"
-    android:layout_marginBottom="8dp">
-    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-        android:layout_weight="1" android:id="@+id/tvDomain"
-        android:textSize="14sp" android:textColor="@color/text_primary"
-        android:drawablePadding="8dp"/>
-    <TextView android:id="@+id/tvRemoveSite"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="🗑️" android:textSize="18sp" android:padding="4dp"/>
-</LinearLayout>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="14dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/bg_card_border"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
+
+        <!-- Website icon -->
+        <TextView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:text="🌐"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:background="@drawable/badge_red_bg"
+            android:layout_marginEnd="12dp" />
+
+        <!-- Domain text -->
+        <TextView
+            android:id="@+id/tvDomain"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:drawablePadding="8dp" />
+
+        <!-- Delete button -->
+        <TextView
+            android:id="@+id/tvRemoveSite"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:text="🗑️"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:padding="4dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
