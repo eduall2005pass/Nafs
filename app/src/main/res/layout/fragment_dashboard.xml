@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary">
@@ -9,318 +10,303 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <!-- Header -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="NafsShield 🛡️"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="20dp" />
-
-        <!-- Guard Status Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_background"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="NafsShield"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="সুরক্ষার অবস্থা"
-                android:textSize="11sp"
-                android:textColor="@color/text_secondary"
-                android:textAllCaps="true"
-                android:letterSpacing="0.08" />
+                android:text="🛡️"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+        <!-- Guard Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/bg_card_border"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="12dp">
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/tvGuardStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/guard_status_off"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/accent_red" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchGuard"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:text="সুরক্ষার অবস্থা"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_secondary"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.08" />
 
-            <TextView
-                android:id="@+id/tvTodayCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="আজ: 0 টি ব্লক"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="12dp">
+
+                    <TextView
+                        android:id="@+id/tvGuardStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/guard_status_off"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent_red" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchGuard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvTodayCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="আজ: 0 টি ব্লক"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Stats Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:background="@drawable/card_background"
-                android:padding="16dp"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/bg_card_border"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="📱"
-                    android:textSize="28sp" />
-                <TextView
-                    android:id="@+id/tvAppsCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/accent_blue" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Block করা App"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📱"
+                        android:textSize="28sp" />
+                    <TextView
+                        android:id="@+id/tvAppsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent_emerald" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Block করা App"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:background="@drawable/card_background"
-                android:padding="16dp"
-                android:layout_marginStart="8dp">
+                android:layout_marginStart="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/bg_card_border"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🔤"
-                    android:textSize="28sp" />
-                <TextView
-                    android:id="@+id/tvKeywordsCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/accent_blue" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Active Keyword"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔤"
+                        android:textSize="28sp" />
+                    <TextView
+                        android:id="@+id/tvKeywordsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent_emerald" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active Keyword"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
         <!-- Accessibility Warning -->
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAccessibilityWarning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/card_background"
-            android:padding="14dp"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="10dp"
-            android:visibility="gone">
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="#1FF59E0B"
+            app:strokeColor="#3FF59E0B"
+            app:strokeWidth="1dp">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="⚠️ Accessibility Service বন্ধ"
-                android:textSize="13sp"
-                android:textColor="@color/accent_yellow" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="14dp">
 
-            <TextView
-                android:id="@+id/btnEnableAccessibility"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="চালু করুন →"
-                android:textSize="13sp"
-                android:textColor="@color/accent_blue"
-                android:padding="4dp" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚠️ Accessibility Service বন্ধ"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent_yellow" />
+
+                <TextView
+                    android:id="@+id/btnEnableAccessibility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="চালু করুন →"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent_emerald"
+                    android:padding="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Overlay Warning -->
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardOverlayWarning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/card_background"
-            android:padding="14dp"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="10dp"
-            android:visibility="gone">
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="#1FF59E0B"
+            app:strokeColor="#3FF59E0B"
+            app:strokeWidth="1dp">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="⚠️ Overlay Permission নেই"
-                android:textSize="13sp"
-                android:textColor="@color/accent_yellow" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="14dp">
 
-            <TextView
-                android:id="@+id/btnGrantOverlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="দিন →"
-                android:textSize="13sp"
-                android:textColor="@color/accent_blue"
-                android:padding="4dp" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚠️ Overlay Permission নেই"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent_yellow" />
+
+                <TextView
+                    android:id="@+id/btnGrantOverlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="দিন →"
+                    android:textSize="13sp"
+                    android:textColor="@color/accent_emerald"
+                    android:padding="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- VPN Card -->
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/card_background"
-            android:padding="16dp"
-            android:gravity="center_vertical">
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/bg_card_border"
+            app:strokeWidth="1dp">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="🌐 DNS VPN"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_primary" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvVpnStatus"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌐 DNS VPN"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/tvVpnStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="বন্ধ"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchVpn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="বন্ধ"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchVpn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Developer Info Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_background"
-            android:padding="20dp"
-            android:gravity="center"
-            android:layout_marginTop="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/developed_by"
-                android:textSize="11sp"
-                android:textColor="@color/text_secondary"
-                android:textAllCaps="true"
-                android:letterSpacing="0.12"
-                android:layout_marginBottom="14dp" />
-
-            <FrameLayout
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:background="@drawable/circle_avatar_bg"
-                android:padding="3dp"
-                android:layout_marginBottom="12dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/circle_avatar_inner"
-                    android:clipToOutline="true"
-                    android:src="@drawable/siam"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Developer" />
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/developer_name"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="6dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/developer_id"
-                    android:textSize="11sp"
-                    android:textColor="@color/accent_blue"
-                    android:background="@drawable/card_background"
-                    android:padding="5dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/developer_code"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary"
-                    android:background="@drawable/card_background"
-                    android:padding="5dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_version"
-                android:textSize="10sp"
-                android:textColor="@color/text_muted"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
-
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Report Card -->
         <com.google.android.material.card.MaterialCardView
@@ -328,31 +314,134 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="@color/bg_card">
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/accent_emerald"
+            app:strokeWidth="1dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:gravity="center_vertical">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_recent_history"
-                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📊"
+                    android:textSize="24sp"
+                    android:layout_marginEnd="12dp" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="📊 রিপোর্ট দেখুন"
+                    android:text="রিপোর্ট দেখুন"
                     android:textColor="@color/text_primary"
-                    android:textSize="16sp"/>
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/arrow_down_float"/>
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:textSize="18sp"
+                    android:textColor="@color/accent_emerald" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Developer Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/bg_card"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/bg_card_border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/developed_by"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.12"
+                    android:layout_marginBottom="12dp" />
+
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/circle_avatar_bg"
+                    android:padding="3dp"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/circle_avatar_inner"
+                        android:clipToOutline="true"
+                        android:src="@drawable/siam"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Developer" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/developer_name"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="6dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/developer_id"
+                        android:textSize="11sp"
+                        android:textColor="@color/accent_emerald"
+                        android:background="@drawable/card_background"
+                        android:padding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/developer_code"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_secondary"
+                        android:background="@drawable/card_background"
+                        android:padding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_version"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_muted"
+                    android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
