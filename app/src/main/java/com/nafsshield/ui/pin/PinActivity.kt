@@ -133,6 +133,10 @@ class PinActivity : AppCompatActivity() {
             is PinResult.Wrong     -> {
                 showError(getString(R.string.pin_wrong, result.attemptsLeft))
                 updateAttemptCounter(result.attemptsLeft)
+                // 3 বা তার কম attempts বাকি থাকলে overlay দেখাও
+                if (result.attemptsLeft <= 3) {
+                    showWrongPinOverlay(result.attemptsLeft)
+                }
             }
             is PinResult.LockedOut -> startLockoutTimer(result.secondsRemaining)
             is PinResult.NoPinSet  -> {
@@ -290,6 +294,24 @@ class PinActivity : AppCompatActivity() {
     }
 
     private fun resetInput() { currentPin.clear(); updateDots(); hideMessage() }
+
+    private fun showWrongPinOverlay(attemptsLeft: Int) {
+        try {
+            val overlay = com.nafsshield.overlay.OverlayManager(this)
+            val msg = when {
+                attemptsLeft == 1 -> "⛔ সতর্কতা!
+
+শেষ সুযোগ — আর একবার ভুল PIN দিলে লক হয়ে যাবে।"
+                attemptsLeft == 0 -> "🔒 লক হয়ে গেছে!
+
+অনেকক্ষণ অপেক্ষা করুন।"
+                else -> "⚠️ ভুল PIN!
+
+আর $attemptsLeft বার চেষ্টার সুযোগ আছে।"
+            }
+            overlay.showPersistentBlockOverlay(msg, 2500)
+        } catch (_: Exception) {}
+    }
 
     private fun updateAttemptCounter(attemptsLeft: Int) {
         val tv = findViewById<android.widget.TextView>(R.id.tvAttemptCount)
