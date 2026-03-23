@@ -67,6 +67,16 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        val lang = newBase.getSharedPreferences("nafsshield_prefs", android.content.Context.MODE_PRIVATE)
+            .getString("app_language", "en") ?: "en"
+        val locale = java.util.Locale(lang)
+        java.util.Locale.setDefault(locale)
+        val config = android.content.res.Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Stored language apply করো
