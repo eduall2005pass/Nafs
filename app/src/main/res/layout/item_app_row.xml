@@ -1,50 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:background="@drawable/card_background"
-    android:padding="14dp"
-    android:layout_marginBottom="8dp">
-
-    <ImageView
-        android:id="@+id/ivAppIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="12dp"
-        android:src="@android:drawable/sym_def_app_icon" />
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/bg_card_border"
+    app:strokeWidth="1dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
 
-        <TextView
-            android:id="@+id/tvAppName"
+        <!-- App Icon with background -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp">
+
+            <ImageView
+                android:id="@+id/ivAppIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="4dp"
+                android:src="@android:drawable/sym_def_app_icon" />
+
+            <!-- Block indicator dot -->
+            <View
+                android:id="@+id/viewBlockDot"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/block_dot_bg" />
+
+        </FrameLayout>
+
+        <!-- App info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/tvAppName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:text="App Name" />
+
+            <TextView
+                android:id="@+id/tvPackageName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="@color/text_muted"
+                android:fontFamily="monospace"
+                android:text="com.example"
+                android:layout_marginTop="2dp" />
+
+            <!-- Blocked badge -->
+            <TextView
+                android:id="@+id/tvBlockedBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⛔ ব্লক করা"
+                android:textSize="10sp"
+                android:textColor="#EF4444"
+                android:background="@drawable/badge_red_bg"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Unblock button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUnblock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="@color/text_primary"
-            android:text="App Name" />
-
-        <TextView
-            android:id="@+id/tvPackageName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:text="আনব্লক"
             android:textSize="11sp"
-            android:textColor="@color/text_secondary"
-            android:fontFamily="monospace"
-            android:text="com.example" />
+            android:paddingHorizontal="12dp"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/accent_red"
+            app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/accent_red" />
+
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnUnblock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Unblock"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:textSize="12sp" />
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
