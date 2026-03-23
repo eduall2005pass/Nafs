@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NafsShield</string>
+    <string name="accessibility_service_label">NafsShield অ্যাক্সেসিবিলিটি সার্ভিস</string>
+    <string name="accessibility_service_description">NafsShield blocked apps, browsers এবং keywords detect করার জন্য এই service ব্যবহার করে।</string>
+
+    <string name="nav_dashboard">হোম</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_keywords">কীওয়ার্ড</string>
+    <string name="nav_settings">সেটিংস</string>
+    <string name="nav_report">রিপোর্ট</string>
+    <string name="nav_websites">সাইট</string>
+    <string name="nav_filter">ফিল্টার</string>
+
+    <string name="setup_pin_title">PIN সেট করুন</string>
+    <string name="setup_pin_subtitle">NafsShield সুরক্ষিত রাখতে ৪ সংখ্যার PIN বেছে নিন</string>
+    <string name="verify_pin_title">PIN দিন</string>
+    <string name="verify_pin_subtitle">NafsShield খুলতে আপনার PIN দিন</string>
+    <string name="pin_mismatch">PIN মিলছে না। আবার চেষ্টা করুন।</string>
+    <string name="pin_wrong">ভুল PIN। বাকি চেষ্টা: %d</string>
+    <string name="pin_locked">অ্যাকাউন্ট লক। %d সেকেন্ড অপেক্ষা করুন।</string>
+
+    <string name="guard_status_on">সুরক্ষা সক্রিয় ✅</string>
+    <string name="guard_status_off">সুরক্ষা নিষ্ক্রিয়</string>
+
+    <string name="no_blocked_apps">কোনো app block করা নেই\nউপরে + চাপুন</string>
+    <string name="no_keywords">কোনো keyword নেই\nউপরে যোগ করুন</string>
+    <string name="keyword_empty_error">Keyword খালি রাখা যাবে না</string>
+    <string name="add_keyword_hint">নতুন keyword লিখুন…</string>
+    <string name="add_keyword">যোগ করুন</string>
+
+    <string name="dashboard_title">NafsShield 🛡️</string>
+    <string name="protection_status">সুরক্ষার অবস্থা</string>
+    <string name="today_count">আজ: %d টি ব্লক</string>
+    <string name="blocked_apps">Block করা App</string>
+    <string name="active_keywords">Active Keyword</string>
+    <string name="dns_vpn">DNS VPN</string>
+    <string name="vpn_on">সক্রিয়</string>
+    <string name="vpn_off">বন্ধ</string>
+    <string name="view_report">রিপোর্ট দেখুন</string>
+    <string name="accessibility_warning">⚠️ Accessibility Service বন্ধ</string>
+    <string name="enable_accessibility">চালু করুন →</string>
+    <string name="overlay_warning">⚠️ Overlay Permission নেই</string>
+    <string name="grant_overlay">দিন →</string>
+
+    <string name="settings_title">⚙️ সেটিংস</string>
+    <string name="dns_settings">🌐 DNS সেটিংস</string>
+    <string name="allowed_browsers">🌐 অনুমোদিত ব্রাউজার</string>
+    <string name="security">🔐 নিরাপত্তা</string>
+    <string name="change_pin">🔑 PIN পরিবর্তন করুন</string>
+    <string name="device_admin">🛡️ Device Admin</string>
+    <string name="device_admin_inactive">নিষ্ক্রিয় — tap করে activate করুন</string>
+    <string name="about">ℹ️ সম্পর্কে</string>
+    <string name="danger_zone">⚠️ বিপদ জোন</string>
+    <string name="uninstall_with_pin">🗑️ PIN দিয়ে Uninstall করুন</string>
+    <string name="add_browser">+ Browser যোগ করুন</string>
+    <string name="language_settings">🌍 ভাষা</string>
+    <string name="select_language">ভাষা নির্বাচন করুন</string>
+
+    <string name="overlay_blocked_title">NafsShield</string>
+    <string name="overlay_blocked_subtitle">ডিজিটাল সুরক্ষা</string>
+    <string name="overlay_app_blocked">⛔ এই অ্যাপটি ব্লক করা আছে</string>
+    <string name="overlay_browser_blocked">🌐 এই ব্রাউজার অনুমোদিত নয়</string>
+    <string name="overlay_keyword_found">⚠️ অনুপযুক্ত বিষয়বস্তু শনাক্ত হয়েছে</string>
+    <string name="overlay_dns_blocked">🔒 এই সাইট ব্লক করা আছে</string>
+    <string name="overlay_footer">~ NafsShield সুরক্ষিত ~</string>
+    <string name="overlay_warning_title">সুরক্ষা সতর্কতা</string>
+
+    <string name="language_select_title">ভাষা নির্বাচন</string>
+    <string name="language_select_subtitle">আপনার পছন্দের ভাষা বেছে নিন</string>
+    <string name="lang_english">English</string>
+    <string name="lang_bangla">বাংলা</string>
+    <string name="lang_continue">চালিয়ে যান</string>
+
+    <string name="developer_name">MD Siam Hasan</string>
+    <string name="developer_id">Siam-258</string>
+    <string name="developer_code">Sh-20</string>
+    <string name="developed_by">Developed by</string>
+    <string name="app_version">Version 2.2</string>
+</resources>
