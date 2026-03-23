@@ -39,13 +39,11 @@
         android:allowBackup="false"
         android:debuggable="false"
         android:hardwareAccelerated="true"
-        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:theme="@style/Theme.NafsShield"
-        android:supportsRtl="true"
-        android:hardwareAccelerated="true">
+        android:supportsRtl="true">
 
         <!-- ── SplashActivity ── -->
         <activity
