@@ -26,7 +26,6 @@ class NafsAccessibilityService : AccessibilityService() {
         val isRunning get() = instance != null
         
         // Correct PIN দেওয়ার পর 4 সেকেন্ড monitoring pause
-        }
 
         // Samsung/Android system UI packages যেখানে "Stop" button আসে
         val SYSTEM_UI_PACKAGES = setOf(
