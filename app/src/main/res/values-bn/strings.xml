@@ -77,4 +77,35 @@
     <string name="developer_code">Sh-20</string>
     <string name="developed_by">Developed by</string>
     <string name="app_version">Version 2.2</string>
+
+    <string name="blocked_badge">⛔ ব্লক করা</string>
+    <string name="unblock">আনব্লক</string>
+    <string name="pin_required">⚠️ নিরাপত্তার জন্য PIN প্রয়োজন</string>
+    <string name="blocked_apps_title">📱 Block করা Apps</string>
+    <string name="keywords_desc">এই শব্দ দেখলেই যেকোনো app block হবে</string>
+    <string name="keywords_ocr_desc">Image-text ও detect করবে (battery বেশি খরচ)</string>
+    <string name="no_apps_found">কোনো অ্যাপ পাওয়া যায়নি</string>
+    <string name="current_dns">বর্তমান DNS:</string>
+    <string name="save">Save করুন</string>
+    <string name="add_browser_btn">Browser যোগ করুন</string>
+    <string name="inactive">নিষ্ক্রিয়</string>
+    <string name="start_time">শুরু:</string>
+    <string name="end_time">শেষ:</string>
+    <string name="change">পরিবর্তন</string>
+    <string name="report_title">📊 রিপোর্ট</string>
+    <string name="today">আজকে</string>
+    <string name="this_week">এই সপ্তাহ</string>
+    <string name="total">মোট</string>
+    <string name="last_7_days">📅 গত ৭ দিন</string>
+    <string name="block_reason">🔍 ব্লকের কারণ</string>
+    <string name="app_block">📱 App ব্লক</string>
+    <string name="browser_block">🌐 Browser ব্লক</string>
+    <string name="dns_block">🚫 DNS ব্লক</string>
+    <string name="recent_log">📋 সাম্প্রতিক লগ</string>
+    <string name="clear_log">মুছুন</string>
+    <string name="no_logs">কোনো লগ নেই</string>
+    <string name="websites_desc">Domain বা URL দাও — ওই সাইট block হবে</string>
+    <string name="no_websites">কোনো website block করা নেই</string>
+    <string name="splash_subtitle">আপনার ডিজিটাল সুরক্ষা</string>
+
 </resources>

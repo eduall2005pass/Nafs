@@ -77,4 +77,54 @@
     <string name="developer_code">Sh-20</string>
     <string name="developed_by">Developed by</string>
     <string name="app_version">Version 2.2</string>
+
+    <!-- App row -->
+    <string name="blocked_badge">⛔ Blocked</string>
+    <string name="unblock">Unblock</string>
+
+    <!-- PIN dialog -->
+    <string name="pin_required">⚠️ PIN required for security</string>
+
+    <!-- Apps fragment -->
+    <string name="blocked_apps_title">📱 Blocked Apps</string>
+
+    <!-- Keywords -->
+    <string name="keywords_desc">Any app will be blocked when this word is detected</string>
+    <string name="keywords_ocr_desc">Detect image text too (uses more battery)</string>
+
+    <!-- App picker -->
+    <string name="no_apps_found">No apps found</string>
+
+    <!-- Settings -->
+    <string name="current_dns">Current DNS:</string>
+    <string name="save">Save</string>
+    <string name="add_browser_btn">Add Browser</string>
+    <string name="inactive">Inactive</string>
+
+    <!-- Schedule -->
+    <string name="start_time">Start:</string>
+    <string name="end_time">End:</string>
+    <string name="change">Change</string>
+
+    <!-- Report -->
+    <string name="report_title">📊 Report</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="total">Total</string>
+    <string name="last_7_days">📅 Last 7 Days</string>
+    <string name="block_reason">🔍 Block Reason</string>
+    <string name="app_block">📱 App Block</string>
+    <string name="browser_block">🌐 Browser Block</string>
+    <string name="dns_block">🚫 DNS Block</string>
+    <string name="recent_log">📋 Recent Log</string>
+    <string name="clear_log">Clear</string>
+    <string name="no_logs">No logs found</string>
+
+    <!-- Websites -->
+    <string name="websites_desc">Enter domain or URL — that site will be blocked</string>
+    <string name="no_websites">No websites blocked</string>
+
+    <!-- Splash -->
+    <string name="splash_subtitle">Your Digital Protection</string>
+
 </resources>

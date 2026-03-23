@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="এই শব্দ দেখলেই যেকোনো app block হবে"
+        android:text="@string/keywords_desc"
         android:textSize="13sp"
         android:textColor="@color/text_secondary"
         android:layout_marginBottom="20dp" />
@@ -82,7 +82,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Image-text ও detect করবে (battery বেশি খরচ)"
+                android:text="@string/keywords_ocr_desc"
                 android:textSize="11sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>

@@ -32,7 +32,7 @@
         android:id="@+id/tvEmptyApps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="কোনো অ্যাপ পাওয়া যায়নি"
+        android:text="@string/no_apps_found"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:gravity="center"

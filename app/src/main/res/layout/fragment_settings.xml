@@ -80,7 +80,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="বর্তমান DNS:"
+                    android:text="@string/current_dns"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
 
@@ -98,7 +98,7 @@
                 android:id="@+id/btnSaveDns"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save করুন" />
+                android:text="@string/save" />
         </LinearLayout>
 
         <!-- Browser Whitelist -->
@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Browser যোগ করুন"
+                android:text="@string/add_browser_btn"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
         </LinearLayout>
 
@@ -212,7 +212,7 @@
                         android:id="@+id/tvAdminStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="নিষ্ক্রিয়"
+                        android:text="@string/inactive"
                         android:textSize="12sp"
                         android:textColor="@color/accent_red" />
                 </LinearLayout>

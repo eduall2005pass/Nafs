@@ -9,7 +9,7 @@
         android:textColor="@color/text_primary" android:layout_marginBottom="8dp"/>
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Domain বা URL দাও — ওই সাইট block হবে"
+        android:text="@string/websites_desc"
         android:textSize="12sp" android:textColor="@color/text_secondary"
         android:layout_marginBottom="16dp"/>
 
@@ -41,7 +41,7 @@
 
     <TextView android:id="@+id/tvNoWebsites"
         android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="কোনো website block করা নেই"
+        android:text="@string/no_websites"
         android:gravity="center" android:textColor="@color/text_muted"
         android:textSize="13sp" android:padding="40dp" android:visibility="gone"/>
 </LinearLayout>

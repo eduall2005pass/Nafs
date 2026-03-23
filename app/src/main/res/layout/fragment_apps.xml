@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="📱 Block করা Apps"
+            android:text="@string/blocked_apps_title"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary" />
