@@ -25,7 +25,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="NafsShield"
+                android:text="@string/app_name"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -57,7 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="সুরক্ষার অবস্থা"
+                    android:text="@string/protection_status"
                     android:textSize="11sp"
                     android:textColor="@color/text_secondary"
                     android:textAllCaps="true"
@@ -90,7 +90,7 @@
                     android:id="@+id/tvTodayCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="আজ: 0 টি ব্লক"
+                    android:text="@string/today_count"
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginTop="8dp" />
@@ -137,7 +137,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Block করা App"
+                        android:text="@string/blocked_apps"
                         android:textSize="11sp"
                         android:textColor="@color/text_secondary" />
                 </LinearLayout>
@@ -176,7 +176,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Active Keyword"
+                        android:text="@string/active_keywords"
                         android:textSize="11sp"
                         android:textColor="@color/text_secondary" />
                 </LinearLayout>
@@ -206,7 +206,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="⚠️ Accessibility Service বন্ধ"
+                    android:text="@string/accessibility_warning"
                     android:textSize="13sp"
                     android:textColor="@color/accent_yellow" />
 
@@ -214,7 +214,7 @@
                     android:id="@+id/btnEnableAccessibility"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="চালু করুন →"
+                    android:text="@string/enable_accessibility"
                     android:textSize="13sp"
                     android:textColor="@color/accent_emerald"
                     android:padding="4dp" />
@@ -244,7 +244,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="⚠️ Overlay Permission নেই"
+                    android:text="@string/overlay_warning"
                     android:textSize="13sp"
                     android:textColor="@color/accent_yellow" />
 
@@ -252,7 +252,7 @@
                     android:id="@+id/btnGrantOverlay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="দিন →"
+                    android:text="@string/grant_overlay"
                     android:textSize="13sp"
                     android:textColor="@color/accent_emerald"
                     android:padding="4dp" />
@@ -286,7 +286,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🌐 DNS VPN"
+                        android:text="@string/dns_vpn"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
@@ -295,7 +295,7 @@
                         android:id="@+id/tvVpnStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="বন্ধ"
+                        android:text="@string/vpn_off"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginTop="2dp" />
@@ -338,7 +338,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="রিপোর্ট দেখুন"
+                    android:text="@string/view_report"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />

@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚙️ Settings"
+            android:text="@string/settings_title"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌐 DNS SETTINGS"
+            android:text="@string/dns_settings"
             android:textSize="11sp"
             android:textColor="@color/text_secondary"
             android:textAllCaps="true"
@@ -139,7 +139,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🔐 SECURITY"
+            android:text="@string/security"
             android:textSize="11sp"
             android:textColor="@color/text_secondary"
             android:textAllCaps="true"
@@ -167,7 +167,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="🔑 PIN পরিবর্তন করুন"
+                    android:text="@string/change_pin"
                     android:textSize="15sp"
                     android:textColor="@color/text_primary" />
 
@@ -204,7 +204,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🛡️ Device Admin"
+                        android:text="@string/device_admin"
                         android:textSize="15sp"
                         android:textColor="@color/text_primary" />
 
@@ -230,7 +230,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ℹ️ ABOUT"
+            android:text="@string/about"
             android:textSize="11sp"
             android:textColor="@color/text_secondary"
             android:textAllCaps="true"
@@ -248,7 +248,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NafsShield 🛡️"
+                android:text="@string/dashboard_title"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -343,7 +343,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚠️ DANGER ZONE"
+            android:text="@string/danger_zone"
             android:textSize="11sp"
             android:textColor="#FF4444"
             android:textAllCaps="true"
@@ -411,7 +411,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🗑️ PIN দিয়ে Uninstall করুন"
+                android:text="@string/uninstall_with_pin"
                 android:textSize="14sp"
                 android:textColor="#FF4444" />
 
