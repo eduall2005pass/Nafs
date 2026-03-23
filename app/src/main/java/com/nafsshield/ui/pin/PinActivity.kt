@@ -127,8 +127,18 @@ class PinActivity : AppCompatActivity() {
         when (val result = pinManager.verifyPin(pin)) {
             is PinResult.Correct -> {
                 isVerified = true
-                showSuccess("✅ সঠিক!")
-                window.decorView.postDelayed({ goToMain() }, 400)
+                showSuccess("✅ Correct!")
+                window.decorView.postDelayed({
+                    // Language select হয়নি → LanguageActivity দেখাও
+                    if (!com.nafsshield.ui.language.LanguageActivity.isLanguageSet(this)) {
+                        startActivity(android.content.Intent(this,
+                            com.nafsshield.ui.language.LanguageActivity::class.java))
+                        finish()
+                    } else {
+                        com.nafsshield.ui.language.LanguageActivity.applyStoredLanguage(this)
+                        goToMain()
+                    }
+                }, 400)
             }
             is PinResult.Wrong     -> {
                 showError(getString(R.string.pin_wrong, result.attemptsLeft))

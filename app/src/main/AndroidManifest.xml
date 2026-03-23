@@ -59,6 +59,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.language.LanguageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NafsShield" />
+
         <!-- ── MainActivity ── -->
         <activity
             android:name=".ui.MainActivity"

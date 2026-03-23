@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Stored language apply করো
+        com.nafsshield.ui.language.LanguageActivity.applyStoredLanguage(this)
         setContentView(R.layout.activity_main)
 
         pinManager = PinManager(this)
