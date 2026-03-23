@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_primary">#0D1117</color>
-    <color name="bg_card">#161B22</color>
-    <color name="bg_card_border">#21262D</color>
-    <color name="accent_blue">#4F6EF5</color>
-    <color name="accent_green">#3FB950</color>
-    <color name="accent_red">#F85149</color>
-    <color name="accent_yellow">#D29922</color>
-    <color name="text_primary">#E6EDF3</color>
-    <color name="text_secondary">#8B949E</color>
-    <color name="text_muted">#484F58</color>
+    <!-- Background -->
+    <color name="bg_primary">#0A0E1A</color>
+    <color name="bg_card">#111827</color>
+    <color name="bg_card_border">#1F2937</color>
+
+    <!-- Accents - Islamic inspired: Emerald + Gold -->
+    <color name="accent_blue">#10B981</color>
+    <color name="accent_green">#10B981</color>
+    <color name="accent_red">#EF4444</color>
+    <color name="accent_yellow">#F59E0B</color>
+    <color name="accent_gold">#F59E0B</color>
+    <color name="accent_emerald">#10B981</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F9FAFB</color>
+    <color name="text_secondary">#9CA3AF</color>
+    <color name="text_muted">#4B5563</color>
+
+    <!-- Extra -->
+    <color name="colorPrimary">#10B981</color>
+    <color name="colorPrimaryDark">#059669</color>
+    <color name="colorAccent">#F59E0B</color>
 </resources>
