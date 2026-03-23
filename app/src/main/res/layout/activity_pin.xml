@@ -8,13 +8,23 @@
     android:background="@color/bg_primary"
     android:padding="32dp">
 
-    <!-- Logo emoji -->
+    <!-- Arabic نفس -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="نفس"
+        android:textSize="36sp"
+        android:textColor="#F59E0B"
+        android:fontFamily="serif"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Logo -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="🛡️"
-        android:textSize="56sp"
-        android:layout_marginBottom="12dp" />
+        android:textSize="48sp"
+        android:layout_marginBottom="8dp" />
 
     <!-- Title -->
     <TextView
@@ -22,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/verify_pin_title"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary" />
 
@@ -32,30 +42,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/verify_pin_subtitle"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textColor="@color/text_secondary"
         android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="40dp" />
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="32dp" />
 
     <!-- PIN Dots -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="12dp">
 
         <ImageView android:id="@+id/dot1"
-            android:layout_width="16dp" android:layout_height="16dp"
+            android:layout_width="18dp" android:layout_height="18dp"
             android:src="@drawable/pin_dot_empty" android:layout_margin="10dp" />
         <ImageView android:id="@+id/dot2"
-            android:layout_width="16dp" android:layout_height="16dp"
+            android:layout_width="18dp" android:layout_height="18dp"
             android:src="@drawable/pin_dot_empty" android:layout_margin="10dp" />
         <ImageView android:id="@+id/dot3"
-            android:layout_width="16dp" android:layout_height="16dp"
+            android:layout_width="18dp" android:layout_height="18dp"
             android:src="@drawable/pin_dot_empty" android:layout_margin="10dp" />
         <ImageView android:id="@+id/dot4"
-            android:layout_width="16dp" android:layout_height="16dp"
+            android:layout_width="18dp" android:layout_height="18dp"
             android:src="@drawable/pin_dot_empty" android:layout_margin="10dp" />
     </LinearLayout>
 
@@ -67,8 +77,23 @@
         android:textSize="13sp"
         android:textColor="@color/accent_red"
         android:gravity="center"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="8dp"
         android:visibility="invisible" />
+
+    <!-- Attempt Counter -->
+    <TextView
+        android:id="@+id/tvAttemptCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:textColor="#EF4444"
+        android:fontFamily="monospace"
+        android:background="@drawable/badge_red_bg"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
     <!-- Keypad -->
     <GridLayout
@@ -80,31 +105,17 @@
         <Button android:id="@+id/btn1" style="@style/KeypadButton" android:text="1" />
         <Button android:id="@+id/btn2" style="@style/KeypadButton" android:text="2" />
         <Button android:id="@+id/btn3" style="@style/KeypadButton" android:text="3" />
-
         <Button android:id="@+id/btn4" style="@style/KeypadButton" android:text="4" />
         <Button android:id="@+id/btn5" style="@style/KeypadButton" android:text="5" />
         <Button android:id="@+id/btn6" style="@style/KeypadButton" android:text="6" />
-
         <Button android:id="@+id/btn7" style="@style/KeypadButton" android:text="7" />
         <Button android:id="@+id/btn8" style="@style/KeypadButton" android:text="8" />
         <Button android:id="@+id/btn9" style="@style/KeypadButton" android:text="9" />
-
         <Button android:id="@+id/btnBiometric"
-        android:visibility="gone" style="@style/KeypadButton" android:text="👆" />
-
-    <TextView
-        android:id="@+id/tvAttemptCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text=""
-        android:textSize="13sp"
-        android:textColor="#EF4444"
-        android:fontFamily="monospace"
-        android:layout_marginTop="8dp"
-        android:visibility="gone" />
-        <Button android:id="@+id/btn0"         style="@style/KeypadButton" android:text="0" />
-        <Button android:id="@+id/btnBack"       style="@style/KeypadButton" android:text="⌫" />
+            android:visibility="gone"
+            style="@style/KeypadButton" android:text="" />
+        <Button android:id="@+id/btn0" style="@style/KeypadButton" android:text="0" />
+        <Button android:id="@+id/btnBack" style="@style/KeypadButton" android:text="⌫" />
     </GridLayout>
 
 </LinearLayout>
