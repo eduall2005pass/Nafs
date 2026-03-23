@@ -224,7 +224,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun checkForNafsShieldInSettings() {
-        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
@@ -282,7 +281,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun handleDeviceAdminScreen() {
-        if (isInGracePeriod()) return
         Log.d(TAG, "🔒 Device Admin screen — launching PIN")
         startActivity(android.content.Intent(this,
             com.nafsshield.ui.pin.PinActivity::class.java).apply {
@@ -294,7 +292,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
-        if (isInGracePeriod()) return
         // Check if this is showing NafsShield's app info
         mainHandler.postDelayed({
             val root = rootInActiveWindow
@@ -325,11 +322,9 @@ class NafsAccessibilityService : AccessibilityService() {
             if (hasWebViewNode(node.getChild(i))) return true
         }
         return false
-        if (isInGracePeriod()) return
     }
 
     private fun handleSettingsScreen(event: AccessibilityEvent) {
-        if (isInGracePeriod()) return
         // Immediately block if accessing NafsShield's app info
         val root = rootInActiveWindow
         if (root != null) {
@@ -475,7 +470,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkLauncherUninstallDrag() {
-        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
@@ -500,7 +494,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkIfNafsShieldDragging(root: AccessibilityNodeInfo) {
-        if (isInGracePeriod()) return
         try {
             // Drag করা item এর text/description এ NafsShield আছে কিনা দেখো
             val dragging = findDraggedItem(root)
@@ -534,7 +527,6 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
         for (i in 0 until node.childCount) {
-        if (isInGracePeriod()) return
             val found = findDraggedItem(node.getChild(i))
             if (found != null) return found
         }
@@ -542,7 +534,6 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkAndBlockStopButton() {
-        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()

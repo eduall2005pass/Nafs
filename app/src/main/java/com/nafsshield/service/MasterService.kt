@@ -1,5 +1,7 @@
 package com.nafsshield.service
 
+import com.nafsshield.R
+
 import android.app.*
 import android.content.Context
 import android.content.Intent
