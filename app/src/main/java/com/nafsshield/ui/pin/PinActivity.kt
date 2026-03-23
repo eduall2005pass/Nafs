@@ -130,7 +130,10 @@ class PinActivity : AppCompatActivity() {
                 showSuccess("✅ সঠিক!")
                 window.decorView.postDelayed({ goToMain() }, 400)
             }
-            is PinResult.Wrong     -> showError(getString(R.string.pin_wrong, result.attemptsLeft))
+            is PinResult.Wrong     -> {
+                showError(getString(R.string.pin_wrong, result.attemptsLeft))
+                updateAttemptCounter(result.attemptsLeft)
+            }
             is PinResult.LockedOut -> startLockoutTimer(result.secondsRemaining)
             is PinResult.NoPinSet  -> {
                 // নতুন Activity launch না করে এখানেই setup mode switch করো
@@ -287,6 +290,18 @@ class PinActivity : AppCompatActivity() {
     }
 
     private fun resetInput() { currentPin.clear(); updateDots(); hideMessage() }
+
+    private fun updateAttemptCounter(attemptsLeft: Int) {
+        val tv = findViewById<android.widget.TextView>(R.id.tvAttemptCount)
+        val maxAttempts = 5
+        val used = maxAttempts - attemptsLeft
+        if (used > 0) {
+            tv.visibility = android.view.View.VISIBLE
+            tv.text = "❌ ভুল চেষ্টা: $used/$maxAttempts"
+        } else {
+            tv.visibility = android.view.View.GONE
+        }
+    }
 
     private fun showError(msg: String) {
         tvMessage.text = msg
