@@ -169,8 +169,8 @@ class DashboardFragment : Fragment() {
 
     private fun updateVpnStatus(on: Boolean) {
         tvVpnStatus.text = if (on)
-            "সক্রিয় — DNS: ${NafsVpnService.currentDns} (${NafsVpnService.currentDnsState.name})"
-        else "বন্ধ"
+            "Active — DNS: ${NafsVpnService.currentDns} (${NafsVpnService.currentDnsState.name})"
+        else "Inactive"
         tvVpnStatus.setTextColor(
             ContextCompat.getColor(requireContext(),
                 if (on) R.color.accent_green else R.color.text_secondary)

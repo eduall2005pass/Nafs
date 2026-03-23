@@ -103,7 +103,7 @@ class KeywordsFragment : Fragment() {
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage("\"${keyword.word}\" বন্ধ করতে PIN দিন")
             .setView(dialogView)
-            .setPositiveButton("বন্ধ করুন") { _, _ ->
+            .setPositiveButton("Turn Off") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
                 if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.toggleKeyword(keyword, false)

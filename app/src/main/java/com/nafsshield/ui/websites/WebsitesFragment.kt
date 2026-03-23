@@ -63,7 +63,7 @@ class WebsitesFragment : Fragment() {
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage(raw + " block করতে PIN দিন")
             .setView(dv).setPositiveButton("Block করুন", null)
-            .setNegativeButton("বাতিল", null).create()
+            .setNegativeButton("Cancel", null).create()
         dlg.show(); et.requestFocus()
         dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {
@@ -90,7 +90,7 @@ class WebsitesFragment : Fragment() {
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage(domain + " unblock করতে PIN দিন")
             .setView(dv).setPositiveButton("Unblock", null)
-            .setNegativeButton("বাতিল", null).create()
+            .setNegativeButton("Cancel", null).create()
         dlg.show(); et.requestFocus()
         dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {

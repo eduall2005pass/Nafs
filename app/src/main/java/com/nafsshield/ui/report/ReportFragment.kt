@@ -62,7 +62,7 @@ class ReportFragment : Fragment() {
 
         tvClearLogs.setOnClickListener {
             android.app.AlertDialog.Builder(requireContext())
-                .setTitle("লগ মুছবেন?")
+                .setTitle("Clear logs?")
                 .setPositiveButton("Delete") { _, _ ->
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                         try { repo.cleanOldLogs() } catch (_: Exception) {}

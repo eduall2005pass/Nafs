@@ -122,7 +122,7 @@ class SettingsFragment : Fragment() {
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage("\"${browser.browserName}\" সরিয়ে দিতে PIN দিন")
             .setView(dialogView)
-            .setPositiveButton("সরিয়ে দিন") { _, _ ->
+            .setPositiveButton("Remove") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
                 if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.removeBrowser(browser)

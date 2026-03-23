@@ -85,7 +85,7 @@ class ScheduleFragment : Fragment() {
                     .setTitle("Delete?")
                     .setMessage("\"${schedule.name}\" শিডিউল মুছে যাবে।")
                     .setPositiveButton("Yes") { _, _ -> viewModel.deleteSchedule(schedule) }
-                    .setNegativeButton("না", null)
+                    .setNegativeButton("No", null)
                     .show()
             }
         )
@@ -137,12 +137,12 @@ class ScheduleFragment : Fragment() {
         }
         
         AlertDialog.Builder(requireContext())
-            .setTitle("নতুন শিডিউল")
+            .setTitle("New Schedule")
             .setView(dialogView)
-            .setPositiveButton("সেভ করুন") { _, _ ->
+            .setPositiveButton("Save") { _, _ ->
                 val name = etName.text.toString().trim()
                 if (name.isBlank()) {
-                    Snackbar.make(requireView(), "নাম দিন", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "Enter a name", Snackbar.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
                 

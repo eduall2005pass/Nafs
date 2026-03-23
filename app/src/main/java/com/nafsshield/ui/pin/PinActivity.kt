@@ -167,14 +167,14 @@ class PinActivity : AppCompatActivity() {
             1 -> when (pinManager.verifyPin(pin)) {
                 is PinResult.Correct -> {
                     setupStep = 2; resetInput()
-                    tvTitle.text    = "নতুন PIN দিন"
+                    tvTitle.text    = "Set New PIN"
                     tvSubtitle.text = ""
                 }
                 is PinResult.Wrong     -> showError("Wrong old PIN")
                 is PinResult.LockedOut -> showError("অ্যাকাউন্ট লক")
                 else -> {}
             }
-            2 -> { firstPin = pin; setupStep = 3; resetInput(); tvTitle.text = "নতুন PIN নিশ্চিত করুন" }
+            2 -> { firstPin = pin; setupStep = 3; resetInput(); tvTitle.text = "Confirm New PIN" }
             3 -> if (pin == firstPin) {
                 pinManager.setPin(pin)
                 showSuccess("PIN পরিবর্তন হয়েছে ✅")
