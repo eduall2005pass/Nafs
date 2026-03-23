@@ -56,6 +56,7 @@ class SettingsFragment : Fragment() {
         setupBrowsers(view)
         setupSecurity(view)
         setupUninstall(view)
+        setupLanguage(view)
     }
 
     private fun setupDns(view: View) {
@@ -208,6 +209,20 @@ class SettingsFragment : Fragment() {
     }
     
     private var currentBrowserDialog: AlertDialog? = null
+
+    private fun setupLanguage(view: View) {
+        val prefs = requireContext().getSharedPreferences("nafsshield_prefs", android.content.Context.MODE_PRIVATE)
+        val currentLang = prefs.getString("app_language", "en") ?: "en"
+        
+        // Current language show করো
+        view.findViewById<android.widget.TextView>(R.id.tvCurrentLang)?.text = 
+            if (currentLang == "bn") "বাংলা" else "English"
+
+        view.findViewById<android.view.View>(R.id.rowLanguage)?.setOnClickListener {
+            startActivity(android.content.Intent(requireContext(), 
+                com.nafsshield.ui.language.LanguageActivity::class.java))
+        }
+    }
 
     private fun setupUninstall(view: View) {
         view.findViewById<View>(R.id.rowUninstall).setOnClickListener {

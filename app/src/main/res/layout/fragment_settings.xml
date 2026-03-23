@@ -351,6 +351,53 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp" />
 
+        <!-- Language Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/language_settings"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="20dp" />
+
+        <LinearLayout
+            android:id="@+id/rowLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/select_language"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tvCurrentLang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="English"
+                android:textSize="13sp"
+                android:textColor="@color/accent_emerald"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="›"
+                android:textSize="20sp"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/rowUninstall"
             android:layout_width="match_parent"
