@@ -131,7 +131,7 @@ class SettingsFragment : Fragment() {
                     Snackbar.make(requireView(), "❌ ভুল PIN!", Snackbar.LENGTH_LONG).show()
                 }
             }
-            .setNegativeButton("বাতিল", null)
+            .setNegativeButton("Cancel", null)
             .show()
         
         etPin.requestFocus()
@@ -161,7 +161,7 @@ class SettingsFragment : Fragment() {
             .sortedBy { it.appName }
         
         if (installed.isEmpty()) {
-            Snackbar.make(requireView(), "কোনো app পাওয়া যায়নি", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "No app found", Snackbar.LENGTH_SHORT).show()
             return
         }
         
@@ -202,7 +202,7 @@ class SettingsFragment : Fragment() {
         currentBrowserDialog = AlertDialog.Builder(requireContext())
             .setTitle("🌐 Browser হিসেবে যোগ করুন")
             .setView(dialogView)
-            .setNegativeButton("বাতিল") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .create()
         
         currentBrowserDialog?.show()
@@ -247,7 +247,7 @@ class SettingsFragment : Fragment() {
             .setMessage("NafsShield uninstall করতে PIN দিন")
             .setView(dialogView)
             .setPositiveButton("Uninstall", null)
-            .setNegativeButton("বাতিল") { d, _ -> d.dismiss() }
+            .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
             .create()
 
         dialog.show()
@@ -297,7 +297,7 @@ class SettingsFragment : Fragment() {
             .setPositiveButton(getString(R.string.lang_continue)) { _, _ ->
                 if (pinManager.verifyPin(et.text?.toString() ?: "") == PinResult.Correct) action()
                 else Snackbar.make(requireView(), "❌ ভুল PIN!", Snackbar.LENGTH_LONG).show()
-            }.setNegativeButton("বাতিল", null).show()
+            }.setNegativeButton("Cancel", null).show()
         et.requestFocus()
     }
 

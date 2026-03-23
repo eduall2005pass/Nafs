@@ -52,7 +52,7 @@ class ScheduleFragment : Fragment() {
         
         // Empty state
         tvEmpty = TextView(requireContext()).apply {
-            text = "কোনো শিডিউল নেই\nউপরে + চাপুন"
+            text = "No schedules\nTap + to add"
             textSize = 14f
             gravity = android.view.Gravity.CENTER
             setPadding(40, 40, 40, 40)
@@ -82,9 +82,9 @@ class ScheduleFragment : Fragment() {
             onToggle = { schedule, isActive -> viewModel.toggleSchedule(schedule.id, isActive) },
             onDelete = { schedule ->
                 AlertDialog.Builder(requireContext())
-                    .setTitle("মুছে ফেলবেন?")
+                    .setTitle("Delete?")
                     .setMessage("\"${schedule.name}\" শিডিউল মুছে যাবে।")
-                    .setPositiveButton("হ্যাঁ") { _, _ -> viewModel.deleteSchedule(schedule) }
+                    .setPositiveButton("Yes") { _, _ -> viewModel.deleteSchedule(schedule) }
                     .setNegativeButton("না", null)
                     .show()
             }
@@ -156,9 +156,9 @@ class ScheduleFragment : Fragment() {
                         daysOfWeek = "0,1,2,3,4,5,6" // All days
                     )
                 )
-                Snackbar.make(requireView(), "শিডিউল যোগ হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Schedule added ✅", Snackbar.LENGTH_SHORT).show()
             }
-            .setNegativeButton("বাতিল", null)
+            .setNegativeButton("Cancel", null)
             .show()
     }
 }

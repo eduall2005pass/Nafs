@@ -72,7 +72,7 @@ class KeywordsFragment : Fragment() {
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage("\"${keyword.word}\" মুছতে PIN দিন")
             .setView(dialogView)
-            .setPositiveButton("মুছুন") { _, _ ->
+            .setPositiveButton("Delete") { _, _ ->
                 val enteredPin = etPin.text?.toString() ?: ""
                 if (pinManager.verifyPin(enteredPin) == PinResult.Correct) {
                     viewModel.removeKeyword(keyword)
@@ -81,7 +81,7 @@ class KeywordsFragment : Fragment() {
                     Snackbar.make(requireView(), "❌ ভুল PIN! Keyword মুছা হয়নি", Snackbar.LENGTH_LONG).show()
                 }
             }
-            .setNegativeButton("বাতিল", null)
+            .setNegativeButton("Cancel", null)
             .create()
         
         dialog.show()
@@ -114,7 +114,7 @@ class KeywordsFragment : Fragment() {
                     adapter.notifyDataSetChanged()
                 }
             }
-            .setNegativeButton("বাতিল") { _, _ ->
+            .setNegativeButton("Cancel") { _, _ ->
                 // Reset switch back to ON
                 adapter.notifyDataSetChanged()
             }
@@ -139,8 +139,8 @@ class KeywordsFragment : Fragment() {
         val dlg = androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("🔒 PIN নিশ্চিত করুন")
             .setMessage("\"$word\" keyword যোগ করতে PIN দিন")
-            .setView(dv).setPositiveButton("যোগ করুন", null)
-            .setNegativeButton("বাতিল", null).create()
+            .setView(dv).setPositiveButton("Add", null)
+            .setNegativeButton("Cancel", null).create()
         dlg.show(); et.requestFocus()
         dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {

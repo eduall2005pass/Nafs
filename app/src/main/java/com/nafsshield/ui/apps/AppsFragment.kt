@@ -69,7 +69,7 @@ class AppsFragment : Fragment() {
                     Snackbar.make(requireView(), "❌ ভুল PIN! Unblock হয়নি", Snackbar.LENGTH_LONG).show()
                 }
             }
-            .setNegativeButton("বাতিল", null)
+            .setNegativeButton("Cancel", null)
             .show()
         
         etPin.requestFocus()
@@ -128,7 +128,7 @@ class AppsFragment : Fragment() {
         currentDialog = AlertDialog.Builder(requireContext())
             .setTitle("📱 কোন App block করবেন?")
             .setView(dialogView)
-            .setNegativeButton("বাতিল") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .create()
         
         currentDialog?.show()
@@ -143,7 +143,7 @@ class AppsFragment : Fragment() {
             .setPositiveButton("Block করুন") { _, _ ->
                 viewModel.blockApp(app.packageName, app.appName)
             }
-            .setNegativeButton("বাতিল", null)
+            .setNegativeButton("Cancel", null)
             .show()
     }
 }

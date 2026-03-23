@@ -170,7 +170,7 @@ class PinActivity : AppCompatActivity() {
                     tvTitle.text    = "নতুন PIN দিন"
                     tvSubtitle.text = ""
                 }
-                is PinResult.Wrong     -> showError("পুরনো PIN ভুল")
+                is PinResult.Wrong     -> showError("Wrong old PIN")
                 is PinResult.LockedOut -> showError("অ্যাকাউন্ট লক")
                 else -> {}
             }
@@ -381,7 +381,7 @@ class PinActivity : AppCompatActivity() {
             MODE_VERIFY          -> { tvTitle.text = getString(R.string.verify_pin_title); tvSubtitle.text = getString(R.string.verify_pin_subtitle) }
             MODE_CHANGE          -> { tvTitle.text = "Old PIN"; tvSubtitle.text = "Enter your current PIN to confirm" }
             MODE_VERIFY_ADMIN    -> { tvTitle.text = "🔐 Device Admin"; tvSubtitle.text = "Enter PIN to deactivate" }
-            MODE_SETTINGS_ACCESS -> { tvTitle.text = "🔐 সুরক্ষিত সেটিংস"; tvSubtitle.text = "পরিবর্তন করতে PIN দিন" }
+            MODE_SETTINGS_ACCESS -> { tvTitle.text = "🔐 Protected Settings"; tvSubtitle.text = "Enter PIN to modify" }
         }
     }
 
