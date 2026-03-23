@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/bg_primary"
+    android:padding="32dp">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/ivSplashLogo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Arabic نفس -->
+    <TextView
+        android:id="@+id/tvSplashArabic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="نفس"
+        android:textSize="48sp"
+        android:textColor="#F59E0B"
+        android:fontFamily="serif"
+        android:layout_marginBottom="4dp" />
+
+    <!-- App name -->
+    <TextView
+        android:id="@+id/tvSplashTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NafsShield"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/tvSplashSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="আপনার ডিজিটাল সুরক্ষা"
+        android:textSize="14sp"
+        android:textColor="@color/accent_emerald"
+        android:layout_marginBottom="48dp" />
+
+    <!-- Loading dots -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="32dp">
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/dot_active"
+            android:layout_marginHorizontal="4dp" />
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/dot_inactive"
+            android:layout_marginHorizontal="4dp" />
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/dot_inactive"
+            android:layout_marginHorizontal="4dp" />
+    </LinearLayout>
+
+</LinearLayout>
