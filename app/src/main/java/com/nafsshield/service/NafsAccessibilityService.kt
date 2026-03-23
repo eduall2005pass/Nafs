@@ -252,8 +252,8 @@ class NafsAccessibilityService : AccessibilityService() {
         try {
             // Disable dangerous buttons by making them unclickable
             val dangerousKeywords = listOf(
-                "uninstall", "আনইনস্টল", "force stop", "ফোর্স স্টপ", 
-                "disable", "নিষ্ক্রিয়", "clear data", "ডেটা মুছে",
+                "uninstall", "আনইনস্টল", "force stop", "ফোর্স স্টপ", "stop app", "end", 
+                "disable", "নিষ্ক্রিয়", "clear data", "ডেটা মুছে", "turn off", "deactivate",
                 "stop", "বন্ধ", "remove", "সরান"
             )
             

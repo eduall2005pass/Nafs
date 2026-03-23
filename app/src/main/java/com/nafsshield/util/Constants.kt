@@ -96,7 +96,7 @@ object Constants {
     // Dangerous settings titles to block
     val DANGEROUS_SETTINGS_TITLES = listOf(
         "uninstall", "force stop", "ফোর্স স্টপ", "강제 종료",
-        "app info", "অ্যাপ তথ্য", "disable", "নিষ্ক্রিয়",
+        "app info", "অ্যাপ তথ্য", "disable", "নিষ্ক্রিয়", "turn off", "deactivate",
         "nafsshield"
     )
 
@@ -128,7 +128,7 @@ object Constants {
 
     // Long press uninstall drag zone text variants
     val UNINSTALL_DRAG_TEXTS = listOf(
-        "uninstall", "আনইনস্টল", "remove", "সরান",
+        "uninstall", "আনইনস্টল", "remove", "সরান", "delete app", "remove app",
         "delete", "মুছুন", "제거", "삭제"
     )
 
