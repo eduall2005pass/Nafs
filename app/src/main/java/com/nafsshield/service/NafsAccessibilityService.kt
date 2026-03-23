@@ -112,7 +112,6 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
     }
-        if (isInGracePeriod()) return
 
     private fun handleWindowChange(pkg: String, event: AccessibilityEvent) {
         lastPkg = pkg
@@ -224,7 +223,6 @@ class NafsAccessibilityService : AccessibilityService() {
             }
         }
     }
-        if (isInGracePeriod()) return
     
     private fun checkForNafsShieldInSettings() {
         if (isInGracePeriod()) return
@@ -284,7 +282,6 @@ class NafsAccessibilityService : AccessibilityService() {
         }
     }
     
-        if (isInGracePeriod()) return
     private fun handleDeviceAdminScreen() {
         if (isInGracePeriod()) return
         Log.d(TAG, "🔒 Device Admin screen — launching PIN")
@@ -296,7 +293,6 @@ class NafsAccessibilityService : AccessibilityService() {
                      com.nafsshield.ui.pin.PinActivity.MODE_VERIFY_ADMIN)
         })
     }
-        if (isInGracePeriod()) return
 
     private fun handleAppInfoScreen(event: AccessibilityEvent) {
         if (isInGracePeriod()) return

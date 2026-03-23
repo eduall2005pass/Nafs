@@ -220,9 +220,7 @@ class PinActivity : AppCompatActivity() {
         try {
             val overlay = com.nafsshield.overlay.OverlayManager(this)
             overlay.showPersistentBlockOverlay(
-                "⛔ ভুল PIN!
-
-অননুমোদিত প্রবেশের চেষ্টা সনাক্ত হয়েছে।",
+                "⛔ ভুল PIN!\n\nঅননুমোদিত প্রবেশের চেষ্টা সনাক্ত হয়েছে।",
                 3000
             )
         } catch (_: Exception) {}
@@ -309,15 +307,9 @@ class PinActivity : AppCompatActivity() {
         try {
             val overlay = com.nafsshield.overlay.OverlayManager(this)
             val msg = when {
-                attemptsLeft == 1 -> "⛔ সতর্কতা!
-
-শেষ সুযোগ — আর একবার ভুল PIN দিলে লক হয়ে যাবে।"
-                attemptsLeft == 0 -> "🔒 লক হয়ে গেছে!
-
-অনেকক্ষণ অপেক্ষা করুন।"
-                else -> "⚠️ ভুল PIN!
-
-আর $attemptsLeft বার চেষ্টার সুযোগ আছে।"
+                attemptsLeft == 1 -> "⛔ সতর্কতা!\n\nশেষ সুযোগ — আর একবার ভুল PIN দিলে লক হয়ে যাবে।"
+                attemptsLeft == 0 -> "🔒 লক হয়ে গেছে!\n\nঅনেকক্ষণ অপেক্ষা করুন।"
+                else -> "⚠️ ভুল PIN!\n\nআর $attemptsLeft বার চেষ্টার সুযোগ আছে।"
             }
             overlay.showPersistentBlockOverlay(msg, 2500)
         } catch (_: Exception) {}
