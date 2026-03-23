@@ -134,28 +134,8 @@ class KeywordsFragment : Fragment() {
             Snackbar.make(requireView(), getString(R.string.keyword_empty_error), Snackbar.LENGTH_SHORT).show()
             return
         }
-        val dv = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
-        val et = dv.findViewById<TextInputEditText>(R.id.etPinVerify)
-        val dlg = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("🔒 PIN নিশ্চিত করুন")
-            .setMessage("\"$word\" keyword যোগ করতে PIN দিন")
-            .setView(dv).setPositiveButton("Add", null)
-            .setNegativeButton("Cancel", null).create()
-        dlg.show(); et.requestFocus()
-        dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {
-                is PinResult.Correct -> {
-                    viewModel.addKeyword(word); etKeyword.text?.clear()
-                    dlg.dismiss()
-                    Snackbar.make(requireView(), "\"$word\" যোগ হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
-                }
-                is PinResult.Wrong -> { et.text?.clear(); et.error = "❌ ভুল PIN! বাকি: ${r.attemptsLeft}" }
-                is PinResult.LockedOut -> {
-                    dlg.dismiss()
-                    Snackbar.make(requireView(), "🔒 ${r.secondsRemaining/60} মিনিট লক", Snackbar.LENGTH_LONG).show()
-                }
-                else -> {}
-            }
-        }
+        viewModel.addKeyword(word)
+        etKeyword.text?.clear()
+        Snackbar.make(requireView(), "\"$word\" যোগ হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
     }
 }

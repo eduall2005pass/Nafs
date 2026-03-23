@@ -89,8 +89,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             when {
-                !pinManager.isPinSetup  -> launchPin(PinActivity.MODE_SETUP)
-                !PinActivity.isVerified -> launchPin(PinActivity.MODE_VERIFY)
+                !pinManager.isPinSetup -> launchPin(PinActivity.MODE_SETUP)
                 else -> checkOverlayAndStart()
             }
         }
@@ -126,10 +125,8 @@ class MainActivity : AppCompatActivity() {
         if (!pinManager.isPinSetup) return
         if (isLaunchingExternalScreen) return
 
-        if (wentToBackground && !PinActivity.isVerified) {
-            launchPin(PinActivity.MODE_VERIFY)
-            wentToBackground = false
-        }
+        // PIN not required on re-open
+        wentToBackground = false
     }
 
     fun launchPin(mode: String) {

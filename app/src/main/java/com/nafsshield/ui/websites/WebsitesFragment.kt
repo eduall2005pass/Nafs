@@ -57,30 +57,10 @@ class WebsitesFragment : Fragment() {
             Snackbar.make(requireView(), "URL বা domain দিন", Snackbar.LENGTH_SHORT).show()
             return
         }
-        val dv = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
-        val et = dv.findViewById<TextInputEditText>(R.id.etPinVerify)
-        val dlg = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("🔒 PIN নিশ্চিত করুন")
-            .setMessage(raw + " block করতে PIN দিন")
-            .setView(dv).setPositiveButton("Block করুন", null)
-            .setNegativeButton("Cancel", null).create()
-        dlg.show(); et.requestFocus()
-        dlg.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            when (val r = pinManager.verifyPin(et.text?.toString() ?: "")) {
-                is PinResult.Correct -> {
-                    pinManager.addBlockedWebsite(raw)
-                    etWebsite.text?.clear()
-                    dlg.dismiss(); refreshList()
-                    Snackbar.make(requireView(), raw + " block হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
-                }
-                is PinResult.Wrong -> { et.text?.clear(); et.error = "❌ ভুল PIN! বাকি: " + r.attemptsLeft }
-                is PinResult.LockedOut -> {
-                    dlg.dismiss()
-                    Snackbar.make(requireView(), "🔒 " + (r.secondsRemaining/60) + " মিনিট লক", Snackbar.LENGTH_LONG).show()
-                }
-                else -> {}
-            }
-        }
+        pinManager.addBlockedWebsite(raw)
+        etWebsite.text?.clear()
+        refreshList()
+        Snackbar.make(requireView(), raw + " block হয়েছে ✅", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun verifyPinThenRemove(domain: String) {
