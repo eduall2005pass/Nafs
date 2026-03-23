@@ -6,13 +6,13 @@
     <item android:id="@+id/appsFragment"
         android:icon="@android:drawable/ic_menu_manage"
         android:title="@string/nav_apps" />
-    <item android:id="@+id/keywordsFragment"
+    <item android:id="@+id/filterFragment"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/nav_keywords" />
+        android:title="ফিল্টার" />
+    <item android:id="@+id/reportFragment"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="রিপোর্ট" />
     <item android:id="@+id/settingsFragment"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/nav_settings" />
-    <item android:id="@+id/websitesFragment"
-        android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="@string/nav_websites" />
 </menu>

@@ -25,4 +25,14 @@
         android:id="@+id/websitesFragment"
         android:name="com.nafsshield.ui.websites.WebsitesFragment"
         android:label="Sites" />
+
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="com.nafsshield.ui.filter.FilterFragment"
+        android:label="ফিল্টার" />
+
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.nafsshield.ui.report.ReportFragment"
+        android:label="রিপোর্ট" />
 </navigation>
