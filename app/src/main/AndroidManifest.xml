@@ -47,6 +47,18 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="true">
 
+        <!-- ── SplashActivity ── -->
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:theme="@style/Theme.NafsShield"
+            android:noHistory="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!-- ── MainActivity ── -->
         <activity
             android:name=".ui.MainActivity"
@@ -56,7 +68,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
