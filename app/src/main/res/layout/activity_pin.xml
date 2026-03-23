@@ -89,7 +89,8 @@
         <Button android:id="@+id/btn8" style="@style/KeypadButton" android:text="8" />
         <Button android:id="@+id/btn9" style="@style/KeypadButton" android:text="9" />
 
-        <Button android:id="@+id/btnBiometric" style="@style/KeypadButton" android:text="👆" />
+        <Button android:id="@+id/btnBiometric"
+        android:visibility="gone" style="@style/KeypadButton" android:text="👆" />
         <Button android:id="@+id/btn0"         style="@style/KeypadButton" android:text="0" />
         <Button android:id="@+id/btnBack"       style="@style/KeypadButton" android:text="⌫" />
     </GridLayout>

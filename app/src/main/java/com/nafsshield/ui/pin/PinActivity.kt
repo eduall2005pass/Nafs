@@ -62,7 +62,7 @@ class PinActivity : AppCompatActivity() {
 
         setupKeypad()
         updateHeader()
-        if (mode == MODE_VERIFY) setupBiometric()
+        // Biometric disabled
     }
 
     private fun setupKeypad() {
@@ -229,8 +229,8 @@ class PinActivity : AppCompatActivity() {
         }
     }
 
-    // ── Biometric ─────────────────────────────────────────────────────
-    private fun setupBiometric() {
+    // ── Biometric disabled ────────────────────────────────────────────
+    private fun setupBiometric() { return  // Fingerprint disabled
         val btn = findViewById<View>(R.id.btnBiometric)
         val bm  = BiometricManager.from(this)
         if (bm.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
