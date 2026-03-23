@@ -101,7 +101,7 @@ class ReportFragment : Fragment() {
 
     private fun buildBarChart(logs: List<BlockLog>) {
         barContainer.removeAllViews(); barLabelContainer.removeAllViews()
-        val days  = listOf("রবি","সোম","মঙ্গ","বুধ","বৃহ","শুক্র","আজ")
+        val days  = listOf("Sun","Mon","Tue","Wed","Thu","Fri","Today")
         val sdf   = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
         val counts = (6 downTo 0).map { i ->
             val c = Calendar.getInstance().also { it.add(Calendar.DAY_OF_YEAR, -i) }
