@@ -464,7 +464,6 @@ class NafsAccessibilityService : AccessibilityService() {
             if (findAndClickNode(node.getChild(i), keywords)) {
                 return true
             }
-        if (isInGracePeriod()) return
         }
         return false
     }
