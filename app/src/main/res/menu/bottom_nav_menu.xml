@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/dashboardFragment"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="@string/nav_dashboard" />
-    <item android:id="@+id/appsFragment"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="@string/nav_apps" />
-    <item android:id="@+id/filterFragment"
-        android:icon="@android:drawable/ic_menu_search"
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/ic_nav_dashboard"
+        android:title="হোম" />
+    <item
+        android:id="@+id/appsFragment"
+        android:icon="@drawable/ic_nav_apps"
+        android:title="Apps" />
+    <item
+        android:id="@+id/filterFragment"
+        android:icon="@drawable/ic_nav_filter"
         android:title="ফিল্টার" />
-    <item android:id="@+id/reportFragment"
-        android:icon="@android:drawable/ic_menu_recent_history"
+    <item
+        android:id="@+id/reportFragment"
+        android:icon="@drawable/ic_nav_report"
         android:title="রিপোর্ট" />
-    <item android:id="@+id/settingsFragment"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/nav_settings" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_nav_settings"
+        android:title="সেটিংস" />
 </menu>
