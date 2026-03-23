@@ -294,7 +294,7 @@ class SettingsFragment : Fragment() {
         val et = dv.findViewById<TextInputEditText>(R.id.etPinVerify)
         AlertDialog.Builder(requireContext())
             .setTitle("🔒 PIN নিশ্চিত করুন").setMessage(msg).setView(dv)
-            .setPositiveButton("নিশ্চিত") { _, _ ->
+            .setPositiveButton(getString(R.string.lang_continue)) { _, _ ->
                 if (pinManager.verifyPin(et.text?.toString() ?: "") == PinResult.Correct) action()
                 else Snackbar.make(requireView(), "❌ ভুল PIN!", Snackbar.LENGTH_LONG).show()
             }.setNegativeButton("বাতিল", null).show()
@@ -318,7 +318,7 @@ class SettingsFragment : Fragment() {
         val dpm    = requireContext().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val admin  = ComponentName(requireContext(), NafsDeviceAdmin::class.java)
         val active = dpm.isAdminActive(admin)
-        tvAdminStatus.text = if (active) "সক্রিয় ✅" else "নিষ্ক্রিয় — tap করে activate করুন"
+        tvAdminStatus.text = if (active) "Active ✅" else getString(R.string.device_admin_inactive)
         tvAdminStatus.setTextColor(
             requireContext().getColor(if (active) R.color.accent_green else R.color.accent_red)
         )

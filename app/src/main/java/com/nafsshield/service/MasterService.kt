@@ -144,7 +144,7 @@ class MasterService : LifecycleService() {
         )
         return NotificationCompat.Builder(this, Constants.CHANNEL_ID_GUARD)
             .setContentTitle("NafsShield সক্রিয় 🛡️")
-            .setContentText("সুরক্ষা চলছে — আজ ${totalBlockedToday}টি ব্লক")
+            .setContentText(getString(R.string.today_count, totalBlockedToday))
             .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setContentIntent(openIntent)
             .setOngoing(true)

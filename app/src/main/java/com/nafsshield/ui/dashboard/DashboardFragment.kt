@@ -139,7 +139,7 @@ class DashboardFragment : Fragment() {
             tvKeywordsCount.text = kws.count { it.isActive }.toString()
         }
         viewModel.todayCount.observe(viewLifecycleOwner) { count ->
-            tvTodayCount.text = "আজ: ${count}টি ব্লক"
+            tvTodayCount.text = getString(R.string.today_count, count)
         }
     }
 

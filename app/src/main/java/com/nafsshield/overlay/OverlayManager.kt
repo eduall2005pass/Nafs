@@ -145,12 +145,12 @@ class OverlayManager(private val context: Context) {
 
         val message = TextView(context).apply {
             text = when (reason) {
-                BlockReason.APP_BLOCKED          -> "এই অ্যাপটি ব্লক করা আছে"
-                BlockReason.BROWSER_NOT_ALLOWED  -> "এই ব্রাউজার অনুমোদিত নয়"
+                BlockReason.APP_BLOCKED          -> context.getString(com.nafsshield.R.string.overlay_app_blocked)
+                BlockReason.BROWSER_NOT_ALLOWED  -> context.getString(com.nafsshield.R.string.overlay_browser_blocked)
                 BlockReason.KEYWORD_FOUND        ->
                     "⚠️ অনুপযুক্ত বিষয়বস্তু শনাক্ত হয়েছে" +
                     (keyword?.let { "\n\"$it\"" } ?: "")
-                BlockReason.DNS_BLOCKED          -> "এই সাইট ব্লক করা আছে"
+                BlockReason.DNS_BLOCKED          -> context.getString(com.nafsshield.R.string.overlay_dns_blocked)
             }
             textSize = 17f
             setTextColor(Color.parseColor("#AABBDD"))

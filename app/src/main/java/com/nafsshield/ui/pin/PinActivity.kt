@@ -108,7 +108,7 @@ class PinActivity : AppCompatActivity() {
         if (setupStep == 1) {
             firstPin = pin; setupStep = 2; resetInput()
             tvTitle.text    = "PIN নিশ্চিত করুন"
-            tvSubtitle.text = "আবার একই PIN দিন"
+            tvSubtitle.text = "Enter the same PIN again"
         } else {
             if (pin == firstPin) {
                 pinManager.setPin(pin)
@@ -379,8 +379,8 @@ class PinActivity : AppCompatActivity() {
         when (mode) {
             MODE_SETUP           -> { tvTitle.text = getString(R.string.setup_pin_title); tvSubtitle.text = getString(R.string.setup_pin_subtitle) }
             MODE_VERIFY          -> { tvTitle.text = getString(R.string.verify_pin_title); tvSubtitle.text = getString(R.string.verify_pin_subtitle) }
-            MODE_CHANGE          -> { tvTitle.text = "পুরনো PIN দিন"; tvSubtitle.text = "নিশ্চিত করতে আগের PIN দিন" }
-            MODE_VERIFY_ADMIN    -> { tvTitle.text = "🔐 Device Admin"; tvSubtitle.text = "নিষ্ক্রিয় করতে PIN দিন" }
+            MODE_CHANGE          -> { tvTitle.text = "Old PIN"; tvSubtitle.text = "Enter your current PIN to confirm" }
+            MODE_VERIFY_ADMIN    -> { tvTitle.text = "🔐 Device Admin"; tvSubtitle.text = "Enter PIN to deactivate" }
             MODE_SETTINGS_ACCESS -> { tvTitle.text = "🔐 সুরক্ষিত সেটিংস"; tvSubtitle.text = "পরিবর্তন করতে PIN দিন" }
         }
     }
