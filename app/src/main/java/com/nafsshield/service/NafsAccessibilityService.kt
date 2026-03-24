@@ -618,7 +618,7 @@ class NafsAccessibilityService : AccessibilityService() {
         if (text.isEmpty() || MasterService.activeKeywords.isEmpty()) return null
         val lower = text.lowercase()
         return MasterService.activeKeywords.firstOrNull { keyword ->
-            val pattern = Regex("(?<![\w\u0980-\u09FF])" + Regex.escape(keyword) + "(?![\w\u0980-\u09FF])")
+            val pattern = Regex("(?<![\\w\u0980-\u09FF])" + Regex.escape(keyword) + "(?![\\w\u0980-\u09FF])")
             pattern.containsMatchIn(lower)
         }
     }
