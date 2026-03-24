@@ -20,6 +20,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Setup Gradle Wrapper jar
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip -O /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp
+          /tmp/gradle-8.7/bin/gradle wrapper --gradle-version=8.7 --distribution-type=bin
+          ls gradle/wrapper/
+
       - name: Make gradlew executable
         run: chmod +x gradlew
 
