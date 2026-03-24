@@ -1,4 +1,14 @@
-package com.nafsshield.ui.dashboard
+#!/usr/bin/env python3
+"""
+Add PIN protection to all security-reducing actions in NafsShield
+Usage: python add_pin_protection.py
+"""
+
+import os
+import sys
+
+# Fixed DashboardFragment with PIN for OFF switches
+DASHBOARD_FRAGMENT_FIX = '''package com.nafsshield.ui.dashboard
 
 import android.content.Intent
 import android.net.VpnService
@@ -252,3 +262,51 @@ class DashboardFragment : Fragment() {
         )
     }
 }
+'''
+
+
+def main():
+    print("🔐 Adding PIN Protection to Security-Reducing Actions")
+    print("=" * 60)
+    
+    # Check if we're in project root
+    if not os.path.exists("app/src/main/java/com/nafsshield"):
+        print("❌ Error: Not in project root directory")
+        print("   Please run from: ~/downloads/Nafs-git/")
+        sys.exit(1)
+    
+    dashboard_path = "app/src/main/java/com/nafsshield/ui/dashboard/DashboardFragment.kt"
+    
+    # Backup original
+    if os.path.exists(dashboard_path):
+        backup_path = dashboard_path + ".backup"
+        with open(dashboard_path, 'r') as f:
+            original = f.read()
+        with open(backup_path, 'w') as f:
+            f.write(original)
+        print(f"✅ Backup created: {backup_path}")
+    
+    # Write fixed version
+    with open(dashboard_path, 'w') as f:
+        f.write(DASHBOARD_FRAGMENT_FIX)
+    
+    print(f"✅ Updated: {dashboard_path}")
+    print()
+    print("=" * 60)
+    print("✅ PIN Protection Added Successfully!")
+    print()
+    print("Changes made:")
+    print("  🔒 Guard Switch OFF → Now requires PIN")
+    print("  🔒 VPN Switch OFF → Now requires PIN")
+    print("  ✅ Guard Switch ON → No PIN (free)")
+    print("  ✅ VPN Switch ON → No PIN (free)")
+    print()
+    print("Test the changes:")
+    print("  ./gradlew assembleRelease")
+    print()
+    print("If something breaks, restore backup:")
+    print(f"  cp {dashboard_path}.backup {dashboard_path}")
+
+
+if __name__ == "__main__":
+    main()

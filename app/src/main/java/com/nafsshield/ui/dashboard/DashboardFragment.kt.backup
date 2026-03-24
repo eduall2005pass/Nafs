@@ -22,10 +22,6 @@ import com.nafsshield.ui.MainActivity
 import com.nafsshield.util.Constants
 import com.nafsshield.util.PinManager
 import com.nafsshield.viewmodel.MainViewModel
-import android.app.AlertDialog
-import com.google.android.material.textfield.TextInputEditText
-import com.nafsshield.util.PinResult
-import com.google.android.material.snackbar.Snackbar
 
 class DashboardFragment : Fragment() {
 
@@ -76,6 +72,7 @@ class DashboardFragment : Fragment() {
 
         setupSwitches()
         observeData()
+
         view.findViewById<android.view.View>(R.id.cardReport).setOnClickListener {
             androidx.navigation.fragment.NavHostFragment
                 .findNavController(this)
@@ -89,30 +86,14 @@ class DashboardFragment : Fragment() {
         switchGuard.isChecked = MasterService.isRunning
         switchGuard.setOnCheckedChangeListener { _, checked ->
             if (checked) {
-                // ON করা — PIN লাগবে না ✅
                 (requireActivity() as MainActivity).checkAndStartGuard()
             } else {
-                // OFF করা — PIN লাগবে 🔒
-                verifyPinThenTurnOff(
-                    "Protection OFF করতে PIN দিন",
-                    {
-                        requireContext().startService(
-                            Intent(requireContext(), MasterService::class.java).apply {
-                                action = Constants.ACTION_STOP_MASTER
-                            }
-                        )
-                        pinManager.isMasterEnabled = false
-                        updateGuardStatus(false)
-                    },
-                    onCancel = {
-                        // PIN cancel/wrong হলে switch আবার ON করো
-                        switchGuard.setOnCheckedChangeListener(null)
-                        switchGuard.isChecked = true
-                        switchGuard.setOnCheckedChangeListener { _, c -> 
-                            setupSwitches()
-                        }
+                requireContext().startService(
+                    Intent(requireContext(), MasterService::class.java).apply {
+                        action = Constants.ACTION_STOP_MASTER
                     }
                 )
+                pinManager.isMasterEnabled = false
             }
             updateGuardStatus(checked)
         }
@@ -121,70 +102,14 @@ class DashboardFragment : Fragment() {
         switchVpn.isChecked = NafsVpnService.isRunning
         switchVpn.setOnCheckedChangeListener { _, checked ->
             if (checked) {
-                // ON করা — PIN লাগবে না ✅
                 val vpnIntent = VpnService.prepare(requireContext())
                 if (vpnIntent != null) vpnLauncher.launch(vpnIntent)
                 else startVpn()
             } else {
-                // OFF করা — PIN লাগবে 🔒
-                verifyPinThenTurnOff(
-                    "VPN OFF করতে PIN দিন",
-                    {
-                        stopVpn()
-                        updateVpnStatus(false)
-                    },
-                    onCancel = {
-                        // PIN cancel/wrong হলে switch আবার ON করো
-                        switchVpn.setOnCheckedChangeListener(null)
-                        switchVpn.isChecked = true
-                        switchVpn.setOnCheckedChangeListener { _, c -> 
-                            setupSwitches()
-                        }
-                    }
-                )
+                stopVpn()
             }
             updateVpnStatus(checked)
         }
-    }
-
-    /**
-     * PIN verify করে action execute করো (OFF করার জন্য)
-     */
-    private fun verifyPinThenTurnOff(message: String, onSuccess: () -> Unit, onCancel: () -> Unit) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_pin_verify, null)
-        val etPin = dialogView.findViewById<TextInputEditText>(R.id.etPinVerify)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("🔒 PIN Required")
-            .setMessage(message)
-            .setView(dialogView)
-            .setPositiveButton("Verify") { _, _ ->
-                val pin = etPin.text?.toString() ?: ""
-                when (pinManager.verifyPin(pin)) {
-                    PinResult.Correct -> {
-                        onSuccess()
-                    }
-                    is PinResult.Wrong -> {
-                        Snackbar.make(requireView(), "❌ ভুল PIN!", Snackbar.LENGTH_LONG).show()
-                        onCancel()
-                    }
-                    is PinResult.LockedOut -> {
-                        Snackbar.make(requireView(), "🔒 Too many attempts!", Snackbar.LENGTH_LONG).show()
-                        onCancel()
-                    }
-                    else -> {
-                        onCancel()
-                    }
-                }
-            }
-            .setNegativeButton("Cancel") { _, _ ->
-                onCancel()
-            }
-            .setCancelable(false)
-            .create()
-
-        dialog.show()
-        etPin.requestFocus()
     }
 
     private fun startVpn() {
