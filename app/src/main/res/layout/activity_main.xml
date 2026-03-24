@@ -21,8 +21,8 @@
         android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:background="@color/bg_card"
-        app:itemIconTint="@color/text_secondary"
-        app:itemTextColor="@color/text_secondary"
+        app:itemIconTint="@color/bottom_nav_colors"
+        app:itemTextColor="@color/bottom_nav_colors"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
