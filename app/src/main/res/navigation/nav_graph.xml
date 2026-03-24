@@ -35,4 +35,9 @@
         android:id="@+id/reportFragment"
         android:name="com.nafsshield.ui.report.ReportFragment"
         android:label="রিপোর্ট" />
+    <fragment
+        android:id="@+id/scheduleFragment"
+        android:name="com.nafsshield.ui.schedule.ScheduleFragment"
+        android:label="শিডিউল" />
+
 </navigation>

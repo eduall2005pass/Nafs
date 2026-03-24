@@ -16,6 +16,8 @@ import com.nafsshield.data.model.BlockedApp
 import com.nafsshield.util.PinManager
 import com.nafsshield.util.PinResult
 import com.nafsshield.viewmodel.AppInfo
+import androidx.navigation.fragment.findNavController
+import com.nafsshield.R as NavR
 import com.nafsshield.viewmodel.MainViewModel
 
 class AppsFragment : Fragment() {
@@ -49,6 +51,10 @@ class AppsFragment : Fragment() {
 
         view.findViewById<FloatingActionButton>(R.id.fabAddApp).setOnClickListener {
             showAppPicker()
+        }
+
+        view.findViewById<android.widget.Button>(R.id.btnSchedule)?.setOnClickListener {
+            findNavController().navigate(R.id.scheduleFragment)
         }
     }
     
