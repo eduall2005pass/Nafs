@@ -29,6 +29,46 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Auto increment version
+        run: |
+          python3 - << 'PYEOF'
+          import re
+
+          with open("app/build.gradle", "r") as f:
+              content = f.read()
+
+          # versionCode increment
+          vc_match = re.search(r'versionCode (\d+)', content)
+          vc = int(vc_match.group(1)) + 1
+          content = re.sub(r'versionCode \d+', f'versionCode {vc}', content)
+
+          # versionName increment (0.0.1)
+          vn_match = re.search(r'versionName "(\d+)\.(\d+)\.(\d+)"', content)
+          major, minor, patch = int(vn_match.group(1)), int(vn_match.group(2)), int(vn_match.group(3))
+          patch += 1
+          if patch >= 10:
+              patch = 0
+              minor += 1
+          if minor >= 10:
+              minor = 0
+              major += 1
+          new_vn = f"{major}.{minor}.{patch}"
+          content = re.sub(r'versionName "\d+\.\d+\.\d+"', f'versionName "{new_vn}"', content)
+
+          with open("app/build.gradle", "w") as f:
+              f.write(content)
+
+          print(f"✅ Version bumped to {new_vn} (code {vc})")
+          PYEOF
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/build.gradle
+          git diff --cached --quiet || git commit -m "chore: auto bump version"
+          git push
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon
 
