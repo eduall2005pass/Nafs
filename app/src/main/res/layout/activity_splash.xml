@@ -58,16 +58,19 @@
         android:layout_marginTop="32dp">
 
         <View
+            android:id="@+id/dot1"
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:background="@drawable/dot_active"
             android:layout_marginHorizontal="4dp" />
         <View
+            android:id="@+id/dot2"
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:background="@drawable/dot_inactive"
             android:layout_marginHorizontal="4dp" />
         <View
+            android:id="@+id/dot3"
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:background="@drawable/dot_inactive"

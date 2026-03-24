@@ -8,6 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nafsshield.R
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import com.nafsshield.ui.MainActivity
 
 @SuppressLint("CustomSplashScreen")
@@ -41,8 +44,27 @@ class SplashActivity : AppCompatActivity() {
         arabic.startAnimation(fadeIn)
         subtitle.startAnimation(fadeIn)
 
+        // Dot animation
+        val dot1 = findViewById<View>(R.id.dot1)
+        val dot2 = findViewById<View>(R.id.dot2)
+        val dot3 = findViewById<View>(R.id.dot3)
+        val dots = listOf(dot1, dot2, dot3)
+        val handler = Handler(Looper.getMainLooper())
+        var step = 0
+
+        val dotRunnable = object : Runnable {
+            override fun run() {
+                dots.forEach { it.setBackgroundResource(R.drawable.dot_inactive) }
+                dots[step % 3].setBackgroundResource(R.drawable.dot_active)
+                step++
+                handler.postDelayed(this, 400)
+            }
+        }
+        handler.post(dotRunnable)
+
         // 2 সেকেন্ড পর MainActivity তে যাও
         logo.postDelayed({
+            handler.removeCallbacks(dotRunnable)
             startActivity(Intent(this, MainActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
