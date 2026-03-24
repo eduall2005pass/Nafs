@@ -400,7 +400,6 @@ class NafsAccessibilityService : AccessibilityService() {
                      android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(com.nafsshield.ui.pin.PinActivity.MODE,
                      com.nafsshield.ui.pin.PinActivity.MODE_SETTINGS_ACCESS)
-        if (isInGracePeriod()) return
         })
     }
 

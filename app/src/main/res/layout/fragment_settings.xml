@@ -242,100 +242,137 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/card_background"
-            android:padding="20dp"
+            android:padding="16dp"
             android:gravity="center">
 
+            <!-- App name + version -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/dashboard_title"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="2dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_version"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="12dp" />
 
             <View
-                android:layout_width="60dp"
+                android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/bg_card_border"
-                android:layout_marginVertical="8dp" />
+                android:layout_marginBottom="12dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/developed_by"
-                android:textSize="10sp"
-                android:textColor="@color/text_secondary"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
-                android:layout_marginTop="8dp" />
-
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:src="@drawable/siam"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_avatar_bg"
-                android:clipToOutline="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/developer_name"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/accent_blue"
-                android:layout_marginTop="4dp" />
-
+            <!-- Developer + Logo row -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Developer photo -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/developer_id"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary"
-                    android:fontFamily="monospace"
-                    android:background="@drawable/card_background"
-                    android:padding="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:layout_marginEnd="6dp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:src="@drawable/siam"
+                        android:scaleType="centerCrop"
+                        android:background="@drawable/circle_avatar_bg"
+                        android:clipToOutline="true"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/developer_name"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent_blue"
+                        android:gravity="center" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/developer_id"
+                            android:textSize="9sp"
+                            android:textColor="@color/text_secondary"
+                            android:fontFamily="monospace"
+                            android:background="@drawable/card_background"
+                            android:padding="3dp"
+                            android:paddingStart="6dp"
+                            android:paddingEnd="6dp"
+                            android:layout_marginEnd="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/developer_code"
+                            android:textSize="9sp"
+                            android:textColor="@color/text_secondary"
+                            android:fontFamily="monospace"
+                            android:background="@drawable/card_background"
+                            android:padding="3dp"
+                            android:paddingStart="6dp"
+                            android:paddingEnd="6dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="60dp"
+                    android:background="@color/bg_card_border"
+                    android:layout_marginHorizontal="12dp" />
+
+                <!-- SIAM INNOVATIVES logo -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/developer_code"
-                    android:textSize="11sp"
-                    android:textColor="@color/text_secondary"
-                    android:fontFamily="monospace"
-                    android:background="@drawable/card_background"
-                    android:padding="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/siamlogo"
+                        android:scaleType="fitCenter" />
+
+                </LinearLayout>
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/bg_card_border"
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="© 2026 All rights reserved"
+                android:text="© 2026 SIAM INNOVATIVES. All rights reserved."
                 android:textSize="9sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="12dp" />
+                android:gravity="center" />
         </LinearLayout>
 
     

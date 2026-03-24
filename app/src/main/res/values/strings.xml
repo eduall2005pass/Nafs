@@ -76,7 +76,7 @@
     <string name="developer_id">Siam-258</string>
     <string name="developer_code">Sh-20</string>
     <string name="developed_by">Developed by</string>
-    <string name="app_version">Version 2.2</string>
+    <string name="app_version">Version 2.5</string>
 
     <!-- App row -->
     <string name="blocked_badge">⛔ Blocked</string>
