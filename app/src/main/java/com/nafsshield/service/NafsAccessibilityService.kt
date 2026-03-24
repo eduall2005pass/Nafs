@@ -532,6 +532,12 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkAndBlockStopButton() {
+        // Uninstall screen এ থাকলে Force Stop block করো না
+        val rootPkg = rootInActiveWindow?.packageName?.toString() ?: ""
+        val isUninstalling = rootPkg.contains("packageinstaller", ignoreCase = true) ||
+                             rootPkg == "com.android.packageinstaller" ||
+                             rootPkg == "com.google.android.packageinstaller"
+        if (isUninstalling) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
