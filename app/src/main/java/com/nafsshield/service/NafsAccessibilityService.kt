@@ -376,6 +376,11 @@ class NafsAccessibilityService : AccessibilityService() {
     }
     
     private fun blockBgActivityStopButton() {
+        val rootPkg2 = rootInActiveWindow?.packageName?.toString() ?: ""
+        val isUninstalling2 = rootPkg2.contains("packageinstaller", ignoreCase = true) ||
+                              rootPkg2 == "com.android.packageinstaller" ||
+                              rootPkg2 == "com.google.android.packageinstaller"
+        if (isUninstalling2) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
