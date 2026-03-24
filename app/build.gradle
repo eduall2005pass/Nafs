@@ -12,8 +12,8 @@ android {
         applicationId "com.nafsshield"
         minSdk 26
         targetSdk 34
-        versionCode (["git", "rev-list", "--count", "HEAD"].execute().text.trim().toInteger() + 100)
-        versionName "2." + ["git", "rev-list", "--count", "HEAD"].execute().text.trim()
+        versionCode 130
+        versionName "2.6.1"
     }
 
     buildFeatures {
