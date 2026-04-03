@@ -473,16 +473,14 @@ class NafsAccessibilityService : AccessibilityService() {
     }
 
     private fun checkLauncherUninstallDrag() {
+        if (isInGracePeriod()) return
         try {
             val root = rootInActiveWindow ?: return
             val allText = extractAllTextFromNode(root).lowercase()
 
             // Launcher এ "uninstall"/"আনইনস্টল" text দেখা দিলে
-            // AND "nafsshield" ও text এ থাকলে — block করো
+            // NafsShield drag করা হচ্ছে কিনা check করো
             val hasUninstall = Constants.UNINSTALL_DRAG_TEXTS.any { allText.contains(it) }
-            val hasNafs = allText.contains("nafsshield") ||
-                          allText.contains("com.nafsshield") ||
-                          allText.contains("naf") // short form
 
             if (hasUninstall) {
                 // Uninstall zone visible হলেই সতর্ক থাকো
@@ -490,7 +488,6 @@ class NafsAccessibilityService : AccessibilityService() {
                 checkIfNafsShieldDragging(root)
             }
             root.recycle()
-        if (isInGracePeriod()) return
         } catch (e: Exception) {
             Log.e(TAG, "checkLauncherDrag error: ${e.message}")
         }
